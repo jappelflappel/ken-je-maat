@@ -3,389 +3,256 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#191919">
+<meta name="theme-color" content="#ffffff">
 <title>Ken Je Maat</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23F6C343'/%3E%3Cpath d='M6 4v10M11 4v6M16 4v10M21 4v6M26 4v10' stroke='%232A2208' stroke-width='2'/%3E%3Ctext x='16' y='28' font-family='Arial Black,sans-serif' font-size='12' text-anchor='middle' fill='%232A2208'%3EKJM%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://api.fontshare.com">
-<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
-<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=pilcrow-rounded@400,500,700&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif&display=swap">
 <style>
-/* Direction: "Loud and flat" (tasteskill seed 1165798313). A street poster for a party game.
-   Idea: the phase of the round becomes the whole screen's colour, on the big screen and on every phone:
-   schatten = red, raden = blue, onthullen = yellow, stand = teal. The meetlint is the one motif.
-   One face (Pilcrow Rounded), lowercase display, square corners, panels meet edge to edge with 4-6px gaps,
-   no lines (except tables and form fields), no shadows, no gradients. */
+/* Style: tasteskill app sheet "Editorial greeting" (light, seed 734778696).
+   A centred 1100px column on a 12-column grid. Every screen opens with a typeset sentence as its h1
+   (Instrument Serif), every figure below sits at regular weight on tonal panels. One accent, deep teal,
+   on the action and the number that matters. Each player keeps a pale tint of their own hue on an avatar. */
 :root{
-  --bg:#191919; --surface:#242424; --surface-2:#2E2E2E; --ink:#FFFFFF; --muted:#B0B0B0;
-  --red:#D71E1E; --blue:#1E4BD7; --teal:#0C7866; --yellow:#FFE927; --black:#111111;
-  --f:"Pilcrow Rounded","Nunito",ui-rounded,system-ui,sans-serif;
-  --m:28px;
+  --ground:#ffffff; --surface:#f6f6f3; --raised:#ffffff; --border:#eaeaea; --rule:#f0f0ee; --control:#d9d9d6;
+  --text:#1f201d; --muted:#636361; --accent:#1b6e66; --accent-hover:#155a53; --accent-soft:#e6f1ef;
+  --positive:#2e7d32; --negative:#b42318; --warning:#92400e;
+  --pill-positive-bg:#dcfae5; --pill-positive-ink:#04250e;
+  --pill-warning-bg:#fffbeb; --pill-warning-ink:#92400e;
+  --pill-neutral-bg:#efefec; --pill-neutral-ink:#3d3d3a;
+  --f:"Instrument Sans",Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --radius-card:22px; --radius-row:14px; --gap:16px; --pad:20px;
   --ease-out:cubic-bezier(0.23,1,0.32,1);
-  --ease-in-out:cubic-bezier(0.77,0,0.175,1);
-  --field:var(--bg); --on:var(--ink); --act:var(--teal); --act-ink:#FFFFFF; --focus:var(--yellow);
-  color-scheme:dark;
+  color-scheme:light;
 }
-html[data-field="red"]{--field:var(--red);--act:var(--black)}
-html[data-field="blue"]{--field:var(--blue);--act:var(--black)}
-html[data-field="teal"]{--field:var(--teal);--act:var(--black)}
-html[data-field="yellow"]{--field:var(--yellow);--on:var(--black);--act:var(--black);--act-ink:var(--yellow);--focus:var(--black)}
-.f-red{background:var(--red);color:#fff;--on:#fff;--act:var(--black);--act-ink:#fff;--focus:var(--yellow)}
-.f-blue{background:var(--blue);color:#fff;--on:#fff;--act:var(--black);--act-ink:#fff;--focus:var(--yellow)}
-.f-teal{background:var(--teal);color:#fff;--on:#fff;--act:var(--black);--act-ink:#fff;--focus:var(--yellow)}
-.f-yellow{background:var(--yellow);color:var(--black);--on:var(--black);--act:var(--black);--act-ink:var(--yellow);--focus:var(--black)}
-
 *{box-sizing:border-box}
 html,body{min-height:100%}
-html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-text-size-adjust:100%;background:var(--field);scrollbar-color:#444 var(--bg);transition:background-color 400ms var(--ease-in-out)}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-text-size-adjust:100%;background:var(--ground)}
 [hidden]{display:none!important}
-body{margin:0;background:var(--field);color:var(--on);font-family:var(--f);font-size:18px;line-height:1.5;caret-color:var(--focus);transition:background-color 400ms var(--ease-in-out),color 400ms var(--ease-in-out)}
-::selection{background:var(--yellow);color:var(--black)}
+body{margin:0;background:var(--ground);color:var(--text);font-family:var(--f);font-size:16px;line-height:1.5;caret-color:var(--accent)}
+::selection{background:var(--accent-soft);color:var(--text)}
 button,input,select{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
-input[type="checkbox"]{accent-color:var(--yellow);width:22px;height:22px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type="checkbox"]{accent-color:var(--accent);width:18px;height:18px}
 h1,h2,h3,p{margin:0}
-h1,h2,h3{text-wrap:balance;font-weight:700}
+h1,h2,h3{text-wrap:balance}
 .num{font-variant-numeric:tabular-nums}
-#app{min-height:100svh}
-.page{min-height:100svh;display:flex;flex-direction:column}
-.pad{padding-left:max(var(--m),env(safe-area-inset-left,0px));padding-right:max(var(--m),env(safe-area-inset-right,0px))}
-@media (max-width:700px){:root{--m:16px}}
-.stack{display:flex;flex-direction:column;gap:16px}
-.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.lead{font-size:clamp(19px,1.6vw,24px);font-weight:500;line-height:1.35}
-.hint{font-size:15px;opacity:.82}
-.count{font-size:18px;font-weight:500;opacity:.85}
+.muted{color:var(--muted)}
+.cap{font-size:14px;color:var(--muted)}
 .spacer{flex:1}
 
-/* bar */
-.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:18px;padding-left:max(var(--m),env(safe-area-inset-left,0px));padding-right:max(var(--m),env(safe-area-inset-right,0px))}
-.wordmark{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;letter-spacing:-.02em}
+/* shell: a quiet top line, then one centred column */
+.page{min-height:100svh;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:18px;
+  padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.wordmark{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px}
 .mark{display:block}
-.mk-bg{fill:var(--yellow)}.mk-tk{fill:var(--black)}
-html[data-field="yellow"] .bar .mk-bg{fill:var(--black)}html[data-field="yellow"] .bar .mk-tk{fill:var(--yellow)}
-.bar-meta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-size:15px;font-weight:500}
-.meta{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
-.meta b{font-weight:700;letter-spacing:.04em}
-.dot{width:10px;height:10px;border-radius:50%;background:#4ADE80;display:inline-block}
-.dot.off{background:var(--yellow)}
-.linkbtn{background:none;border:0;padding:4px 0;cursor:pointer;color:inherit;font-weight:500;font-size:15px;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
+.top-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
+.col{width:100%;max-width:1148px;margin:0 auto;padding-block:40px 72px;
+  padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:var(--gap)}
+.stack-l{display:flex;flex-direction:column;gap:var(--gap)}
+.greet{display:flex;flex-direction:column;gap:12px;margin-bottom:34px}
+.title{font-family:var(--serif);font-weight:400;font-size:clamp(34px,3.4vw,48px);line-height:1.08;letter-spacing:-.01em;max-width:24ch}
+.q-title{max-width:28ch}
+.sub{font-size:18px;color:var(--muted);max-width:60ch}
+.accent{color:var(--accent)}
+.qmeta{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.sep{color:var(--control)}
+.block{margin-top:34px}
 
-/* buttons: square, flat, pressable */
-.btn{border:0;border-radius:0;padding:14px 22px;font-weight:700;font-size:18px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;letter-spacing:-.01em;
-  transition:transform 140ms var(--ease-out),background-color 160ms ease,color 160ms ease}
-.btn:active:not(:disabled){transform:scale(.97)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-ink{background:var(--act);color:var(--act-ink)}
-.btn-ink:hover:not(:disabled){background:#000}
-html[data-field="none"] .btn-ink:hover:not(:disabled),.under .btn-ink:hover:not(:disabled){background:#0E8F79}
-.btn-red{background:var(--red);color:#fff}
-.btn-red:hover:not(:disabled){background:#EC2B2B}
-.btn-ghost{background:transparent;color:var(--on);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
-.btn-ghost:hover:not(:disabled){background:rgba(0,0,0,.18)}
-.btn-big{font-size:22px;padding:22px 36px}
-.btn-sm{padding:10px 14px;font-size:16px}
-.ico{display:block;flex:none}
+/* the 12-column grid */
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--gap);list-style:none;margin:0;padding:0}
+.grid > *{grid-column:span 12}
+.grid > .s3{grid-column:span 3}.grid > .s4{grid-column:span 4}.grid > .s6{grid-column:span 6}.grid > .s9{grid-column:span 9}
 
-/* fields */
-.field{background:var(--black);border:2px solid #3E3E3E;border-radius:0;padding:11px 12px;min-width:0;width:100%;color:#fff;transition:border-color 160ms ease}
-.field:focus{border-color:var(--yellow);outline:none}
-.f-yellow .field{background:#fff;color:var(--black);border-color:var(--black)}
-.f-yellow .field:focus{border-color:var(--red)}
-select.field{padding-right:28px}
-.field::placeholder{color:#8A8A8A}
-.big-input{width:100%;height:104px;background:#fff;color:var(--black);border:0;border-radius:0;font-weight:700;font-size:58px;text-align:center;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.big-input::placeholder{color:#B5B5B5}
-.big-input:focus{outline:4px solid var(--focus);outline-offset:0}
-.num-form{display:flex;flex-direction:column;gap:12px}
-.lbl{font-size:22px;font-weight:700;line-height:1.2}
-.form-err{background:var(--black);color:#FFB4B4;padding:8px 12px;font-size:15px}
-.form-err:empty{display:none}
-.sent{font-size:17px;font-weight:700}
-.notice{background:var(--black);color:#fff;padding-block:14px;padding-left:max(var(--m),env(safe-area-inset-left,0px));padding-right:max(var(--m),env(safe-area-inset-right,0px));font-size:16px}
-.notice.warn{background:var(--yellow);color:var(--black)}
-.confirm{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--black);color:#fff;padding:6px 6px 6px 14px;--act:var(--teal);--act-ink:#fff;--on:#fff}
+/* surfaces: tonal panels, one white inner card for the main picture */
+.panel{background:var(--surface);border-radius:var(--radius-card);padding:var(--pad);display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.panel-title{font-size:15px;font-weight:600}
+.card{background:var(--raised);border:1px solid var(--border);border-radius:16px;padding:20px}
+.rows{display:flex;flex-direction:column;gap:8px}
+.rowcard{display:flex;align-items:center;gap:12px;min-height:63px;padding:0 16px;background:var(--raised);border:1px solid var(--border);border-radius:var(--radius-row)}
+.rowcard .tag{margin-left:auto}
+.as-btn{width:100%;text-align:left;cursor:pointer;transition:border-color 160ms ease,background-color 160ms ease,transform 140ms var(--ease-out)}
+.as-btn:hover{border-color:var(--control)}
+.as-btn:active{transform:scale(.99)}
+.as-btn.done{background:#fbfdfc}
+.empty{padding:8px 0}
+
+/* people */
+.person{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.person .nm{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.av{width:30px;height:30px;border-radius:50%;display:inline-grid;place-items:center;flex:none;font-size:12px;font-weight:600;color:var(--text);
+  background:color-mix(in srgb,var(--c) 26%,#ffffff)}
+.av-lg{width:44px;height:44px;font-size:15px}
+
+/* pills and tags */
+.pill,.chip,.tag{display:inline-flex;align-items:center;gap:6px;border-radius:999px;white-space:nowrap;font-size:13px;font-weight:500;padding:3px 10px;background:var(--pill-neutral-bg);color:var(--pill-neutral-ink)}
+.pill{font-size:14px;padding:5px 12px}
+.pill b{font-weight:600;letter-spacing:.04em}
+.tag.ok{background:var(--pill-positive-bg);color:var(--pill-positive-ink)}
+.tag.warn{background:var(--pill-warning-bg);color:var(--pill-warning-ink)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--positive)}
+.dot.off{background:var(--warning)}
 .dots{display:inline-flex;vertical-align:middle}
-.dots i{display:inline-block;width:9px;height:9px;margin:0 3px;border-radius:50%;background:currentColor;animation:bob 1s infinite var(--ease-in-out)}
+.dots i{display:inline-block;width:6px;height:6px;margin:0 2px;border-radius:50%;background:currentColor;animation:bob 1s infinite ease-in-out}
 .dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
-@keyframes bob{0%,100%{transform:translateY(0);opacity:.45}50%{transform:translateY(-6px);opacity:1}}
+@keyframes bob{0%,100%{opacity:.3}50%{opacity:1}}
 
-/* the meetlint: a ruler drawn as an SVG pattern */
-.tape{background-color:var(--yellow);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='16'%3E%3Cg fill='%23111111'%3E%3Crect x='0' width='2' height='16'/%3E%3Crect x='10' width='2' height='8'/%3E%3Crect x='20' width='2' height='8'/%3E%3Crect x='30' width='2' height='8'/%3E%3Crect x='40' width='2' height='8'/%3E%3Crect x='25' width='2' height='11'/%3E%3C/g%3E%3C/svg%3E");background-repeat:repeat-x;background-size:50px 16px}
+/* controls */
+.btn{border:0;border-radius:999px;height:38px;padding:0 16px;font-weight:500;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;
+  transition:background-color 160ms ease,transform 140ms var(--ease-out)}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover)}
+.btn-quiet{background:#ebebe8;color:var(--text)}
+.btn-quiet:hover:not(:disabled){background:#e1e1dd}
+.btn-sm{height:32px;padding:0 12px;font-size:14px}
+.btn-lg{height:48px;padding:0 24px;font-size:16px}
+.btn-block{width:100%}
+.linkbtn{background:none;border:0;padding:4px 0;cursor:pointer;color:var(--muted);font-size:14px;text-decoration:underline;text-underline-offset:4px}
+.linkbtn:hover{color:var(--text)}
+.icon-btn{border:0;background:transparent;color:var(--muted);width:32px;height:32px;border-radius:999px;display:grid;place-items:center;cursor:pointer;flex:none;transition:background-color 160ms ease,color 160ms ease}
+.icon-btn:hover{background:var(--pill-neutral-bg);color:var(--text)}
+.rowcard .icon-btn{margin-left:4px}
+.ico{display:block;flex:none}
+.inline{display:flex;align-items:center;gap:8px}
+.inline.wrap{flex-wrap:wrap}
+.field{height:38px;background:var(--raised);border:1px solid var(--control);border-radius:10px;padding:0 12px;min-width:0;width:100%;transition:border-color 160ms ease}
+.field:focus{border-color:var(--accent);outline:none}
+.field-lg{height:52px;font-size:18px}
+select.field{padding-right:28px}
+.field::placeholder,.big-input::placeholder{color:#9b9b97}
+.code-input{text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+.big-input{width:100%;height:76px;background:var(--raised);border:1px solid var(--control);border-radius:var(--radius-row);font-size:40px;text-align:center;font-variant-numeric:tabular-nums;transition:border-color 160ms ease}
+.big-input:focus{border-color:var(--accent);outline:none}
+.num-form{display:flex;flex-direction:column;gap:12px}
+.lbl{font-size:17px;font-weight:600}
+.form-err{color:var(--negative);font-size:14px}
+.form-err:empty{display:none}
+.sent{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.notice{background:var(--pill-neutral-bg);border-radius:var(--radius-row);padding:12px 16px;font-size:15px}
+.notice.warn{background:var(--pill-warning-bg);color:var(--pill-warning-ink)}
+.confirm{display:inline-flex;align-items:center;gap:8px;background:var(--pill-neutral-bg);border-radius:999px;padding:4px 4px 4px 14px;font-size:14px}
+.actionbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px}
 
-/* ---------- landing ---------- */
-.landing{display:flex;flex-direction:column}
-.hero{position:relative;min-height:82svh;display:flex;flex-direction:column;z-index:2}
-.shout{display:flex;flex-direction:column;font-size:clamp(84px,22vw,330px);line-height:.84;letter-spacing:-.055em;font-weight:700;margin-top:6svh;position:relative;z-index:1;
-  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-.frag{position:absolute;right:max(20px,env(safe-area-inset-right,0px));bottom:-14svh;width:clamp(230px,24vw,340px);transform:rotate(5deg);z-index:3;animation:shutter 1100ms var(--ease-out) both}
-.frag-in{padding:22px;display:flex;flex-direction:column;gap:12px;animation:settle 1100ms var(--ease-out) both}
-.frag-top{display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:500}
-.frag-who{font-weight:700}
-.frag-q{font-size:22px;font-weight:700;line-height:1.1;letter-spacing:-.02em}
-.frag-label{font-size:15px;font-weight:700;margin-top:6px}
-.frag-input{background:#fff;color:var(--black);font-size:52px;font-weight:700;text-align:center;line-height:1;padding:16px 0;letter-spacing:-.03em}
-.frag-btn{background:var(--black);color:#fff;text-align:center;font-weight:700;padding:14px;font-size:18px}
-.frag-ok{font-size:14px;font-weight:700}
-@keyframes shutter{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
-@keyframes settle{from{transform:scale(1.12)}to{transform:scale(1)}}
-.band{position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:space-between;gap:24px 40px;flex-wrap:wrap;min-height:18svh;padding-block:28px 32px;
-  background:var(--yellow);color:var(--black);--on:var(--black);--act:var(--black);--act-ink:var(--yellow);--focus:var(--black);
-  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-.band > *{max-width:calc(100% - clamp(0px,28vw,400px))}
-.band{justify-content:flex-start}
-.band-lead{font-size:22px;font-weight:500;max-width:40ch;line-height:1.35}
-.band-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.join-inline{display:flex;gap:6px;flex-wrap:wrap}
-.join-inline .field{width:170px;background:#fff;color:var(--black);border-color:var(--black)}
-.code-input{text-transform:uppercase;letter-spacing:.12em;font-weight:700}
-.join-inline .form-err{flex-basis:100%}
+/* landing */
+.steps{counter-reset:none}
+.step h3{font-size:17px;font-weight:600}
+.step .cap{margin-top:auto}
+.score-side{justify-content:space-between}
+.big-fig{font-size:44px;line-height:1;color:var(--accent);font-weight:400}
+.kpi{font-size:32px;line-height:1;font-weight:400;color:var(--text)}
+.kpi.low{color:var(--negative)}
+.foot{margin-top:56px;font-size:14px}
+.ruler{background-color:#fff;border:1px solid var(--border);border-radius:6px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='14'%3E%3Cg fill='%23b9b9b5'%3E%3Crect x='0' width='1.5' height='14'/%3E%3Crect x='10' width='1.5' height='6'/%3E%3Crect x='20' width='1.5' height='6'/%3E%3Crect x='30' width='1.5' height='6'/%3E%3Crect x='40' width='1.5' height='6'/%3E%3Crect x='25' width='1.5' height='9'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:repeat-x;background-size:50px 14px}
+.mini-tape{position:relative;margin:40px 8px 40px}
+.mini-rule{height:22px}
+.mini-pin{position:absolute;top:-30px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;font-size:13px;font-weight:500}
+.mini-pin::after{content:"";width:2px;height:30px;background:var(--text);margin-top:2px}
+.mini-pin span{background:var(--text);color:#fff;border-radius:999px;padding:1px 9px}
+.mini-dot{position:absolute;top:4px;width:14px;height:14px;border-radius:50%;background:var(--accent);border:3px solid #fff;box-sizing:content-box;transform:translateX(-50%);transition:left 120ms var(--ease-out)}
+.mini-lab{position:absolute;top:24px;left:50%;transform:translateX(-50%);font-size:13px;font-weight:500;color:var(--accent);white-space:nowrap}
+.card input[type="range"]{width:100%;accent-color:var(--accent);height:32px;margin:0}
 
-.sec-head{font-size:clamp(48px,6.4vw,104px);line-height:.9;letter-spacing:-.05em;margin-bottom:64px}
-.stages{padding-block:160px 0}
-.stage-bar{display:flex;gap:6px;height:max(24vh,210px)}
-.seg{flex-basis:0;min-width:12%;padding:20px;display:flex;flex-direction:column;gap:8px}
-.seg-dur{font-size:clamp(20px,2vw,30px);font-weight:700;letter-spacing:-.02em;line-height:1.1}
-.seg-t{display:none;font-size:16px;font-weight:500}
-.stage-notes{display:flex;gap:6px;list-style:none;margin:16px 0 0;padding:0}
-.stage-notes li{flex-basis:0;min-width:12%;font-size:18px;padding-right:16px;max-width:none}
-.figure{margin-top:160px;min-height:88svh;display:flex;flex-direction:column;padding-block:64px}
-.fig-q{font-size:44px;line-height:1;letter-spacing:-.03em}
-.slider{margin-top:28px;width:min(440px,100%);min-height:210px;background:var(--black);color:#fff;padding:18px 20px 20px}
-.slider-top{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;font-size:17px}
-.slider-val{font-size:28px;font-weight:700;color:var(--yellow)}
-.slider input[type="range"]{width:100%;height:44px;accent-color:var(--yellow);margin:6px 0 0}
-.fig-foot{margin-top:auto;padding-top:48px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
-.fig{font-size:clamp(84px,22vw,330px);line-height:.8;font-weight:700;letter-spacing:-.06em}
-.fig-unit{font-size:.22em;letter-spacing:-.02em;margin-left:.2em}
-.fig-how{font-size:18px;max-width:30ch;font-weight:500}
-.foot{padding-block:140px 48px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
-.foot-name{font-size:clamp(84px,22vw,330px);line-height:.8;letter-spacing:-.06em;font-weight:700}
-.foot-note{font-size:15px;color:#E6E6E6;max-width:60ch}
-
-@media (max-width:700px){
-  .hero{min-height:0}
-  .shout{font-size:24vw;margin-top:4svh}
-  .band > *{max-width:none}
-  .frag{position:relative;right:auto;bottom:auto;align-self:flex-end;width:52%;margin:-8px 16px -56px 0}
-  .frag-in{padding:14px;gap:8px}.frag-q{font-size:16px}.frag-input{font-size:34px;padding:8px 0}.frag-btn{padding:8px;font-size:15px}
-  .band{padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:96px;flex-direction:column;align-items:stretch}
-  .band-actions{flex-direction:column;align-items:stretch;order:-1}
-  .band{padding-top:72px}
-  .join-inline .field{flex:1}
-  .stages{padding-block:110px 0}
-  .sec-head{font-size:11vw;margin-bottom:32px}
-  .stage-bar{flex-direction:column;height:70svh;min-height:0}
-  .seg{min-height:72px;min-width:0}
-  .seg-t{display:block}
-  .stage-notes{display:none}
-  .figure{margin-top:110px;min-height:84svh}
-  .fig-q{font-size:28px}
-  .slider{width:100%}
-  .fig-foot{flex-direction:column;align-items:flex-start}
-  .fig{font-size:28vw}
-  .fig-unit{display:block;font-size:20px;margin:8px 0 0}
-  .fig-how{font-size:15px}
-}
-
-/* live meetlint inside the slider */
-.mini-tape{position:relative;margin:34px 6px 34px}
-.mini-rule{height:22px;background-color:#fff}
-.mini-pin{position:absolute;top:-30px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;font-size:14px;font-weight:700}
-.mini-pin::after{content:"";width:3px;height:30px;background:var(--yellow);margin-top:2px}
-.mini-pin span{background:var(--yellow);color:var(--black);padding:1px 8px}
-.mini-dot{position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:var(--red);border:3px solid #fff;transform:translateX(-50%);transition:left 120ms var(--ease-out)}
-.mini-lab{position:absolute;top:22px;left:50%;transform:translateX(-50%);font-size:14px;font-weight:700;white-space:nowrap}
-
-/* showcase: the stand as a departure board, cut by the section's edges */
-.showcase{margin-top:160px;overflow:hidden;padding-inline:12px}
-.dboard{display:flex;flex-direction:column;gap:4px;margin-block:-36px}
-.drow{border:0;border-radius:0;text-align:left;cursor:pointer;display:grid;grid-template-columns:72px minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr) auto;align-items:center;gap:16px;min-height:72px;padding:0 24px;background:var(--surface);color:#fff;font-size:28px;font-weight:700;letter-spacing:-.02em;
-  transition:background-color 200ms ease,min-height 320ms var(--ease-out)}
-.drow:hover{background:var(--surface-2)}
-.drow .pos{color:var(--muted)}
-.drow .fact{font-size:22px;font-weight:500;color:var(--muted)}
-.drow .pts{background:var(--c);color:var(--ci);padding:6px 14px;text-align:right;min-width:5ch}
-.drow-detail{display:none;grid-column:2 / -1;font-size:22px;font-weight:500}
-.drow.open{background:var(--c);color:var(--ci);min-height:156px;align-content:center;row-gap:6px}
-.drow.open .pos,.drow.open .fact{color:inherit;opacity:.85}
-.drow.open .pts{background:var(--black);color:#fff}
-.drow.open .drow-detail{display:block}
-@media (max-width:700px){
-  .showcase{margin-top:110px;padding-inline:16px}
-  .dboard{margin-block:-32px}
-  .drow{grid-template-columns:30px minmax(0,1fr) auto;min-height:64px;padding:0 14px;font-size:20px;gap:10px}
-  .drow .fact{display:none}
-  .drow.open{min-height:140px}
-  .drow-detail{font-size:16px}
-}
-
-/* scroll entrances: content is visible by default; script opts elements in */
-.rise{opacity:0;transform:translateY(28px)}
-.rise.risen{opacity:1;transform:none;transition:opacity 650ms var(--ease-out) var(--d,0ms),transform 650ms var(--ease-out) var(--d,0ms)}
-
-/* ---------- host: lobby ---------- */
-.lobby{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:6px}
-.join-poster{padding:32px var(--m);display:flex;flex-direction:column;gap:18px}
-.jp-lead{font-size:clamp(24px,2.4vw,34px);line-height:1.05;letter-spacing:-.03em}
-.jp-code{font-size:clamp(72px,9.5vw,150px);line-height:.85;font-weight:700;letter-spacing:.01em;white-space:nowrap}
-.jp-row{display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap;margin-top:auto}
-.qr{background:#fff;padding:8px;width:156px;height:156px;flex:none}
+/* lobby */
+.join{align-items:flex-start}
+.qr{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;width:100%;max-width:220px;aspect-ratio:1}
 .qr svg{display:block;width:100%;height:100%}
-.jp-side{display:flex;flex-direction:column;gap:10px;flex:1 1 160px;min-width:0}
-.url{font-size:14px;word-break:break-all;font-weight:500}
-.lobby-players,.lobby-questions{background:var(--surface);padding:28px var(--m);display:flex;flex-direction:column;gap:16px;color:#fff;--on:#fff;--act:var(--teal);--act-ink:#fff}
-.lobby-questions{grid-column:1 / -1}
-.lobby-go{grid-column:1 / -1;background:var(--surface-2);padding:22px var(--m);display:flex;align-items:center;gap:16px 28px;flex-wrap:wrap;color:#fff;--on:#fff}
-.go-right{margin-left:auto}
-.sec-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
-.sec-head-s{font-size:clamp(28px,2.6vw,38px);line-height:1;letter-spacing:-.03em}
-.pblocks{display:flex;flex-wrap:wrap;gap:6px}
-.pblock{background:var(--c);color:var(--ci);display:flex;align-items:center;gap:10px;padding:12px 8px 12px 18px;font-size:24px;font-weight:700;letter-spacing:-.02em;max-width:100%}
-.pblock .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pblock .on{font-size:13px;font-weight:500;opacity:.85}
-.pblocks.small .pblock{font-size:18px;padding:10px 14px}
-.pblock .x,.qrow .x{border:0;background:transparent;color:inherit;opacity:.75;cursor:pointer;padding:6px;display:grid;place-items:center;transition:opacity 160ms ease,background-color 160ms ease}
-.pblock .x:hover,.qrow .x:hover{opacity:1;background:rgba(0,0,0,.18)}
-.empty{font-size:17px;color:var(--muted)}
-.add-row{display:flex;gap:6px}
-.add-row .field{flex:1}
-.qlist{display:flex;flex-direction:column;gap:6px}
-.qrow{display:grid;grid-template-columns:30px minmax(120px,170px) minmax(0,1fr) 36px;gap:6px;align-items:center}
-.qrow .n{color:var(--muted);text-align:right;font-weight:700}
-@media (max-width:700px){.qrow{grid-template-columns:22px minmax(0,1fr) 36px}.qrow .field.q{grid-column:2 / 3}.qrow .x{grid-row:1 / 3;grid-column:3}}
-.counts{display:flex;flex-wrap:wrap;gap:6px;font-size:15px;font-weight:500}
-.counts span{background:var(--surface-2);padding:4px 10px}
-.counts span.warn{background:var(--yellow);color:var(--black)}
-@media (max-width:820px){.lobby{grid-template-columns:minmax(0,1fr)}.lobby-questions,.lobby-go{grid-column:auto}.go-right{margin-left:0}}
+.code-big{font-size:32px;letter-spacing:.06em;font-weight:500}
+.url{word-break:break-all}
+.qlist{display:flex;flex-direction:column;gap:8px}
+.qrow{display:grid;grid-template-columns:24px minmax(120px,170px) minmax(0,1fr) 32px;gap:8px;align-items:center}
+.qrow .n{color:var(--muted);text-align:right;font-size:14px}
 
-/* ---------- host: phases ---------- */
-.phase{display:flex;flex-direction:column;flex:1}
-.phase-main{padding-block:40px 40px;display:flex;flex-direction:column;gap:24px}
-.about{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:clamp(20px,1.8vw,26px);font-weight:500}
-.who-chip{background:var(--c);color:var(--ci);padding:4px 14px;font-weight:700}
-.round{font-size:15px;opacity:.85}
-.q-big{font-size:clamp(42px,5.6vw,96px);line-height:.95;letter-spacing:-.045em;max-width:19ch}
-.q-mid{font-size:clamp(34px,3.8vw,64px);line-height:.98;letter-spacing:-.04em;max-width:22ch}
-.q-phone{font-size:clamp(30px,8.4vw,40px);line-height:1;letter-spacing:-.04em}
-.phase-status{font-size:clamp(20px,1.9vw,28px);font-weight:500;line-height:1.3}
-.phase-band{margin-top:auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-block:22px;background:rgba(0,0,0,.24)}
-.guess-main{flex-direction:row;justify-content:space-between;align-items:flex-start;gap:32px}
-.guess-q{display:flex;flex-direction:column;gap:20px;min-width:0}
-.timer{font-size:clamp(130px,16vw,260px);line-height:.8;font-weight:700;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
-.timer.low{color:var(--yellow)}
-.phone-timer{font-size:96px}
-.tiles-wrap{display:flex;flex-direction:column;gap:14px;padding-bottom:36px}
-.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px}
-.tile{border:0;border-radius:0;background:rgba(0,0,0,.28);color:var(--on);min-height:124px;padding:18px 20px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;text-align:left;cursor:pointer;
-  transition:transform 140ms var(--ease-out),background-color 200ms ease}
-.tile:hover{background:rgba(0,0,0,.4)}
-.tile:active{transform:scale(.97)}
-.tile .nm{font-size:30px;font-weight:700;letter-spacing:-.03em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tile .st{font-size:15px;font-weight:500;opacity:.85}
-.tile.in{background:var(--c);color:var(--ci);animation:pop 320ms var(--ease-out)}
-@keyframes pop{0%{transform:scale(.94)}60%{transform:scale(1.03)}100%{transform:scale(1)}}
-.manual{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--black);color:#fff;padding:16px;--act:var(--teal);--act-ink:#fff;--on:#fff}
-.manual .field{width:180px}
+/* phases */
+.status-panel .status{display:flex;align-items:center;gap:14px;font-size:20px;flex-wrap:wrap}
+.tile-kpi{justify-content:space-between}
+.panel > .tag{align-self:flex-start}
+.timer{font-size:72px;line-height:1;font-weight:400;font-variant-numeric:tabular-nums}
+.timer.low{color:var(--negative)}
+.manual{flex-direction:row;flex-wrap:wrap;align-items:center}
+.manual .field{width:170px}
 
-/* reveal: the yellow field, then the meetlint on the seam, then the board on charcoal */
-.reveal-main{padding-bottom:12px}
-.reveal-q{font-size:clamp(20px,1.8vw,26px);font-weight:500;max-width:52ch}
-.actual{display:flex;align-items:flex-end;gap:12px 28px;flex-wrap:wrap}
-.actual .big{font-size:clamp(170px,22vw,340px);line-height:.78;letter-spacing:-.07em;font-weight:700}
-.actual .who{font-size:clamp(24px,2.4vw,36px);font-weight:700;letter-spacing:-.03em;padding-bottom:1.6vw}
-.seam{padding-bottom:20px}
-.nl-wrap{overflow-x:auto;padding-bottom:4px}
-.nl{position:relative;min-width:560px;margin:72px 10px 0}
-.nl .rule{height:34px;background-color:#fff}
-.nl .tick{position:absolute;top:40px;transform:translateX(-50%);font-size:14px;font-weight:700;white-space:nowrap}
+/* the meetlint */
+.nl-wrap{overflow-x:auto}
+.nl{position:relative;min-width:560px;margin:66px 10px 0}
+.nl .rule{height:30px}
+.nl .tick{position:absolute;top:36px;transform:translateX(-50%);font-size:13px;color:var(--muted);white-space:nowrap}
 .nl .g{position:absolute;top:8px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
-.nl .g .d{width:20px;height:20px;border-radius:50%;background:var(--c);border:4px solid #fff}
-.nl .g .stem{width:3px;background:var(--black)}
-.nl .g .lab{font-size:16px;font-weight:700;white-space:nowrap;background:var(--c);color:var(--ci);padding:3px 10px;max-width:180px;overflow:hidden;text-overflow:ellipsis}
-.nl .pin{position:absolute;top:-66px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:2}
-.nl .pin .bub{background:var(--black);color:var(--yellow);font-weight:700;padding:4px 14px;font-size:22px;white-space:nowrap}
-.nl .pin .needle{width:5px;height:64px;background:var(--black)}
-.page > .stack{flex:1}
-.stack > .under{flex:1}
-.under{background:var(--bg);color:#fff;--on:#fff;--act:var(--teal);--act-ink:#fff;--focus:var(--yellow);padding-block:6px 40px;flex:1;display:flex;flex-direction:column;gap:6px}
-.controls{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:22px}
+.nl .g .d{width:14px;height:14px;border-radius:50%;background:var(--c);border:3px solid #fff;box-sizing:content-box}
+.nl .g .stem{width:1.5px;background:var(--control)}
+.nl .g .lab{font-size:14px;font-weight:500;white-space:nowrap;background:color-mix(in srgb,var(--c) 22%,#ffffff);border-radius:999px;padding:2px 10px;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.nl .pin{position:absolute;top:-58px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:2}
+.nl .pin .bub{background:var(--text);color:#fff;border-radius:999px;padding:3px 12px;font-size:17px;white-space:nowrap}
+.nl .pin .needle{width:2px;height:56px;background:var(--text)}
 .anim .nl .g{animation:dropin 420ms var(--ease-out) both;animation-delay:calc(var(--i) * 80ms)}
-.anim .nl .pin{animation:pinin 560ms var(--ease-out) both;animation-delay:calc(var(--n) * 80ms + 380ms)}
-@keyframes dropin{from{transform:translate(-50%,-22px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
-@keyframes pinin{from{transform:translate(-50%,-40px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+.anim .nl .pin{animation:pinin 520ms var(--ease-out) both;animation-delay:calc(var(--n) * 80ms + 360ms)}
+@keyframes dropin{from{transform:translate(-50%,-14px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+@keyframes pinin{from{transform:translate(-50%,-24px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
 
-/* the board: rows as a departure board */
-.board{display:flex;flex-direction:column;gap:4px}
-.brow{display:grid;grid-template-columns:52px minmax(0,1.6fr) minmax(0,1fr) minmax(0,.8fr) auto;align-items:center;gap:16px;min-height:72px;padding:0 20px;background:var(--surface);color:#fff;font-size:clamp(20px,2vw,28px)}
-.brow .pos{color:var(--muted);font-weight:700}
-.brow .nm{font-weight:700;letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:10px}
-.brow .fact{font-size:19px;color:var(--muted);white-space:nowrap}
-.brow .pts{background:var(--c);color:var(--ci);font-weight:700;padding:6px 14px;min-width:4.5ch;text-align:right}
-.brow.open{background:var(--c);color:var(--ci);min-height:156px;padding-block:22px;align-content:center;row-gap:8px}
-.brow.open .pos,.brow.open .fact{color:inherit;opacity:.85}
-.brow.open .pts{background:var(--black);color:#fff}
-.open-detail{grid-column:2 / -1;font-size:17px;font-weight:500}
-.anim .brow{animation:slidein 380ms var(--ease-out) both;animation-delay:calc(var(--i) * 60ms + 220ms)}
-@keyframes slidein{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
-.lrow{grid-template-columns:52px minmax(110px,1.1fr) minmax(0,2fr) auto auto}
+/* ranking rows */
+.rank{display:grid;grid-template-columns:28px auto auto minmax(0,1fr) auto;gap:12px}
+.rank .pos,.lrow .pos{color:var(--muted);font-size:14px;text-align:right}
+.rank .det{color:var(--muted);font-size:14px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank .pts{font-size:20px;min-width:4.5ch;text-align:right}
+.rank.best{background:#f4faf9;border-color:#cfe5e1}
+.rank.best .pts{color:var(--accent)}
+.rank .tag{margin-left:0}
+.lrow{display:grid;grid-template-columns:28px minmax(120px,220px) minmax(0,1fr) auto auto;gap:14px}
 .barcell{display:block;min-width:0}
-.fillbar{display:block;height:30px;width:var(--w);min-width:6px;background:var(--c);transform-origin:left center}
-.tot{font-weight:700;font-size:clamp(24px,2.4vw,34px);letter-spacing:-.02em;text-align:right}
-.delta{background:var(--c);color:var(--ci);font-weight:700;font-size:17px;padding:5px 10px;text-align:right;min-width:5ch}
-.mv{display:inline-flex;align-items:center;gap:2px;font-size:15px;font-weight:700}
-.mv.up{color:#4ADE80}.mv.down{color:#FF8A8A}
-.mv .ico{width:14px;height:14px}
-.anim .fillbar{animation:grow 800ms var(--ease-out) both;animation-delay:calc(var(--i) * 70ms + 200ms)}
-@keyframes grow{from{transform:scaleX(.04);opacity:.4}to{transform:scaleX(1);opacity:1}}
-@media (max-width:700px){
-  .brow{grid-template-columns:30px minmax(0,1fr) auto;gap:4px 10px;min-height:64px;padding:0 14px;font-size:20px}
-  .brow .pos,.brow .nm{grid-row:1}
-  .brow .pts{grid-row:1;grid-column:3}
-  .brow .fact{display:none}
-  .brow.open .fact{display:block;grid-column:2 / -1;font-size:16px}
-  .brow.open .fact + .fact{margin-top:-4px}
-  .open-detail{font-size:15px}
-  .lrow{grid-template-columns:30px minmax(0,1fr) auto auto}
-  .lrow .barcell{grid-column:1 / -1;order:5;padding-bottom:10px}
-  .fillbar{height:14px}
-}
+.fillbar{display:block;height:8px;width:var(--w);min-width:4px;border-radius:999px;background:var(--control);transform-origin:left center}
+.lrow.lead .fillbar{background:var(--accent)}
+.tot{font-size:20px;text-align:right;min-width:5ch}
+.delta{display:inline-flex;align-items:center;gap:6px;justify-content:flex-end;font-size:13px;color:var(--positive);min-width:6ch}
+.mv{display:inline-flex;align-items:center;gap:1px;font-size:12px}
+.mv.up{color:var(--positive)}.mv.down{color:var(--negative)}
+.mv .ico{width:12px;height:12px}
+.anim .rowcard{animation:slidein 360ms var(--ease-out) both;animation-delay:calc(var(--i, 0) * 50ms + 160ms)}
+.anim .fillbar{animation:grow 700ms var(--ease-out) both;animation-delay:calc(var(--i, 0) * 60ms + 200ms)}
+@keyframes slidein{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+@keyframes grow{from{transform:scaleX(.05)}to{transform:scaleX(1)}}
 
-.shout-m{font-size:clamp(56px,9vw,150px);line-height:.86;letter-spacing:-.05em}
-.big-num{font-size:clamp(100px,34vw,180px);line-height:.82;font-weight:700;letter-spacing:-.06em}
-.plus{font-size:56px;font-weight:700;letter-spacing:-.04em}
-.anim .phase-main > *,.anim.stack > .pad > *{animation:enter 520ms var(--ease-out) both}
-.anim .phase-main > :nth-child(2),.anim.stack > .pad > :nth-child(2){animation-delay:70ms}
-.anim .phase-main > :nth-child(3),.anim.stack > .pad > :nth-child(3){animation-delay:140ms}
-.anim .phase-main > :nth-child(n+4),.anim.stack > .pad > :nth-child(n+4){animation-delay:210ms}
-@keyframes enter{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
-
-/* ---------- end ---------- */
-.winner{background:var(--c);color:var(--ci);padding-block:56px 48px;display:flex;flex-direction:column;gap:16px}
-.shout-w{font-size:clamp(64px,11vw,190px);line-height:.84;letter-spacing:-.055em;overflow-wrap:anywhere}
-.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;align-items:end;max-width:900px;margin:40px 0 6px}
-.pod{display:flex;flex-direction:column;gap:10px;min-width:0}
-.pod .nm{font-weight:700;font-size:clamp(18px,2vw,26px);letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pod .blk{background:var(--c);color:var(--ci);display:flex;flex-direction:column;justify-content:space-between;padding:16px 18px;font-weight:700}
-.pod .blk .p{font-size:clamp(44px,6vw,90px);line-height:.85;letter-spacing:-.05em}
-.pod .blk .s{font-size:17px}
-.pod.p1 .blk{height:240px}.pod.p2 .blk{height:176px}.pod.p3 .blk{height:126px}
-.anim .pod .blk{animation:rise 700ms var(--ease-out) both;transform-origin:bottom}
-.anim .pod.p1 .blk{animation-delay:.9s}.anim .pod.p2 .blk{animation-delay:.5s}.anim .pod.p3 .blk{animation-delay:.1s}
-@keyframes rise{from{transform:scaleY(.15);opacity:0}to{transform:scaleY(1);opacity:1}}
-.awards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px;margin-top:6px}
-.award{padding:24px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.award .t{font-size:16px;font-weight:500;opacity:.9}
-.award .w{font-size:clamp(32px,3vw,44px);font-weight:700;letter-spacing:-.04em;line-height:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.award .d{font-size:16px;font-weight:500}
-.phase > section.pad.stack{padding-block:56px 0}
+/* end */
+.award{gap:10px}
+.award .person .nm{font-size:18px}
 .tbl-wrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:600px;font-size:16px}
-th,td{text-align:left;padding:12px 10px;border-bottom:1px solid #3A3A3A;vertical-align:top}
-th{font-size:15px;color:var(--muted);font-weight:500}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:15px}
+th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:13px;color:var(--muted);font-weight:500}
 td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .chart-wrap{overflow-x:auto}
 .chart-wrap svg{display:block;min-width:560px;width:100%;height:auto}
+.anim .greet > *{animation:enter 480ms var(--ease-out) both}
+.anim .greet > :nth-child(2){animation-delay:70ms}
+@keyframes enter{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
 
+/* phone */
+@media (max-width:760px){
+  .top{padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .col{padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .greet{margin-bottom:18px}
+  .title{font-size:30px}
+  .sub{font-size:16px}
+  .grid > .s3{grid-column:span 6}.grid > .s4,.grid > .s6,.grid > .s9{grid-column:span 12}
+  .block{margin-top:20px}
+  .qrow{grid-template-columns:20px minmax(0,1fr) 32px}.qrow .field.q{grid-column:2 / 3}.qrow .icon-btn{grid-row:1 / 3;grid-column:3}
+  .rank{grid-template-columns:22px minmax(0,1fr) auto;row-gap:2px;padding-block:10px}
+  .rank .pos{grid-row:1 / 3}
+  .rank .tag{grid-column:2;grid-row:3;justify-self:start}
+  .rank .det{grid-column:2 / 4;grid-row:2;text-align:left}
+  .rank .pts{grid-column:3;grid-row:1}
+  .lrow{grid-template-columns:22px minmax(0,1fr) auto auto;gap:6px 8px;padding-block:10px}
+  .delta{min-width:0}
+  .lrow .barcell{grid-column:2 / -1;grid-row:2}
+  .timer{font-size:56px}
+  .actionbar .btn-lg{flex:1}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -429,7 +296,7 @@ const BANK = [
   "Hoeveel tabbladen staan er nu open in je browser?",
   "Hoeveel euro heb je ooit in één avond uitgegeven in de kroeg?"
 ];
-const COLORS = ["#FFE927","#D71E1E","#1E4BD7","#0C7866","#FF7AB6","#FF8A1E","#7FD8FF","#B7F04A","#C8A2FF","#FFFFFF","#00C2A8","#A0522D"];
+const COLORS = ["#E8A33D","#D9534F","#3E7CB1","#2F9E7A","#C266A7","#E07B39","#5BB5C7","#8DB33A","#8E7CC3","#A0785A","#3AA6A0","#C9A227"];
 const PHASE_LABEL = {answer:"Eigen inschatting",guess:"Iedereen raadt",reveal:"Onthulling",scores:"Tussenstand",end:"Eindstand"};
 
 /* ---------- helpers ---------- */
@@ -691,48 +558,36 @@ function render() {
   const app = $("#app");
   const c = captureInputs();
   app.className = S.role === "player" ? "phone" : "";
-  document.documentElement.dataset.field = fieldFor();
   app.replaceChildren(view());
   restoreInputs(c);
-  if (S.role === "landing") setupRise(app);
-}
-function setupRise(root) {
-  if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("risen"); io.unobserve(e.target); } }), { threshold: 0.12 });
-  root.querySelectorAll("[data-rise]").forEach(el => { el.style.setProperty("--d", (+el.dataset.rise || 0) + "ms"); el.classList.add("rise"); io.observe(el); });
 }
 // Play an entry animation once per phase, not on every re-render.
 function animOnce(tag) { if (S.animKey === tag) return ""; S.animKey = tag; return "anim"; }
 
-// Each phase owns one flat poster field that fills the whole screen, on the big screen and on every phone.
-const FIELDS = { answer: "red", guess: "blue", reveal: "yellow", scores: "teal" };
-function fieldFor() {
-  if (S.ui.loading || S.role !== "host" && S.role !== "player") return "none";
-  if (S.role === "player" && (!S.joined || !meIn(S.state))) return "none";
-  return FIELDS[S.state?.phase] || "none";
-}
-// Text colour that reads on a player's own colour.
-function inkFor(hex) {
-  const c = safeColor(hex).slice(1);
-  const lin = [0, 2, 4].map(i => parseInt(c.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4);
-  return .2126 * lin[0] + .7152 * lin[1] + .0722 * lin[2] > .179 ? "#111111" : "#FFFFFF";
-}
-const pstyle = (c, extra = "") => `--c:${safeColor(c)};--ci:${inkFor(c)};${extra}`;
+const pstyle = (c, extra = "") => `--c:${safeColor(c)};${extra}`;
 const dots = () => h("span", { class: "dots", "aria-hidden": "true" }, h("i"), h("i"), h("i"));
+const initials = n => (String(n).trim().split(/\s+/).map(w => w[0]).join("").slice(0, 2) || "?").toUpperCase();
+function avatar(p, size) {
+  return h("span", { class: "av" + (size ? " av-" + size : ""), style: pstyle(p?.color), "aria-hidden": "true" }, initials(p?.name || "?"));
+}
+function person(p, suffix) {
+  return h("span", { class: "person" }, avatar(p), h("span", { class: "nm" }, (p?.name || "Iemand") + (suffix || "")));
+}
+function hour() { const hr = new Date().getHours(); return hr < 6 ? "Goedenacht" : hr < 12 ? "Goedemorgen" : hr < 18 ? "Goedemiddag" : "Goedenavond"; }
 
 function mark() {
-  return s("svg", { viewBox: "0 0 28 18", width: 28, height: 18, "aria-hidden": "true", class: "mark" },
-    s("rect", { class: "mk-bg", x: 0, y: 0, width: 28, height: 18, rx: 2 }),
-    [3, 8, 13, 18, 23].map((x, i) => s("rect", { class: "mk-tk", x, y: 0, width: 2, height: i % 2 ? 6 : 10 })));
+  return s("svg", { viewBox: "0 0 28 18", width: 26, height: 17, "aria-hidden": "true", class: "mark" },
+    s("rect", { x: 0, y: 0, width: 28, height: 18, rx: 4, fill: "#1b6e66" }),
+    [5, 10, 15, 20].map((x, i) => s("rect", { x, y: 0, width: 2, height: i % 2 ? 6 : 10, rx: 1, fill: "#ffffff" })));
 }
 function bar(extra) {
-  return h("header", { class: "bar" },
-    h("div", { class: "wordmark" }, mark(), "ken je maat"),
-    extra ? h("div", { class: "bar-meta" }, extra) : null);
+  return h("header", { class: "top" },
+    h("div", { class: "wordmark" }, mark(), "Ken je maat"),
+    extra ? h("div", { class: "top-meta" }, extra) : null);
 }
 
 function view() {
-  if (S.ui.loading) return h("div", { class: "page" }, bar(), h("p", { class: "lead pad" }, "verbinden ", dots()), S.ui.loadNote ? h("p", { class: "notice warn" }, S.ui.loadNote) : null);
+  if (S.ui.loading) return h("div", { class: "page" }, bar(), h("main", { class: "col" }, h("p", { class: "sub" }, "Verbinden ", dots()), S.ui.loadNote ? h("p", { class: "notice warn" }, S.ui.loadNote) : null));
   if (S.role === "player") return viewPlayer();
   if (S.role === "host") return viewHost();
   return viewLanding();
@@ -742,53 +597,39 @@ function view() {
 function viewLanding() {
   const last = ls.get("kjm-last-host", null);
   const lastSt = last ? ls.get("kjm-host-" + last, null) : null;
-  const codeIn = h("input", { id: "land-code", "data-keep": true, class: "field code-input", maxlength: 6, autocomplete: "off", autocapitalize: "characters", placeholder: "spelcode", "aria-label": "Spelcode", enterkeyhint: "go" });
+  const codeIn = h("input", { id: "land-code", "data-keep": true, class: "field code-input", maxlength: 6, autocomplete: "off", autocapitalize: "characters", placeholder: "Spelcode", "aria-label": "Spelcode", enterkeyhint: "go" });
   const err = h("p", { class: "form-err", "aria-live": "polite" });
-  return h("div", { class: "landing" },
-    h("section", { class: "hero f-red" },
-      bar(),
-      h("h1", { class: "shout" }, h("span", { "data-rise": 0 }, "ken je"), h("span", { "data-rise": 90 }, "maat")),
-      phoneFragment()),
-    h("section", { class: "band" },
-      h("p", { class: "band-lead", "data-rise": 120 }, "Raad wat je vriend over zichzelf schat. Eén groot scherm, iedereen op de eigen telefoon."),
-      h("div", { class: "band-actions", "data-rise": 200 },
-        h("form", { class: "join-inline", onsubmit: e => { e.preventDefault(); const c = cleanCode(codeIn.value); if (c.length !== 6) { err.textContent = "Een spelcode heeft 6 tekens."; return; } location.hash = c; } },
-          codeIn, h("button", { class: "btn btn-ink", type: "submit" }, "doe mee"), err),
-        h("button", { class: "btn btn-red btn-big", onclick: () => startHost(newCode()) }, "nieuw spel"),
-        lastSt?.players ? h("button", { class: "linkbtn", onclick: () => startHost(last) }, `verder met spel ${last} (${lastSt.players.length} spelers)`) : null)),
-    stagesBar(),
-    boardShowcase(),
-    scoreSlider(),
-    h("footer", { class: "foot" },
-      h("p", { class: "foot-name", "data-rise": 0 }, "ken je maat"),
-      h("p", { class: "foot-note" }, "Gemaakt voor een avond met vrienden. Spelgegevens (namen en getallen) gaan via een openbare server: zet er niets geheims in.")));
-}
-// The product's own screen, shown on the poster instead of a photograph.
-function phoneFragment() {
-  return h("div", { class: "frag", "data-ui": "", "aria-hidden": "true" },
-    h("div", { class: "frag-in f-blue" },
-      h("p", { class: "frag-top" }, h("span", { class: "frag-who" }, "over sanne"), "vraag 3 van 8"),
-      h("p", { class: "frag-q" }, "hoe vaak ben je dronken naar huis gefietst?"),
-      h("p", { class: "frag-label" }, "wat heeft sanne ingevuld?"),
-      h("div", { class: "frag-input num" }, "35"),
-      h("div", { class: "frag-btn" }, "verstuur"),
-      h("p", { class: "frag-ok" }, "ontvangen: 35")));
-}
-function stagesBar() {
   const steps = [
-    { w: 20, f: "red", dur: "± 20 seconden", t: "Eerst vult één speler stiekem een eigen inschatting in." },
-    { w: 45, f: "blue", dur: "45 seconden", t: "Dan raadt de rest welk getal dat was. Niet het echte antwoord: de eigen schatting." },
-    { w: 15, f: "yellow", dur: "± 15 seconden", t: "Tot slot het meetlint: hoe dichterbij, hoe meer punten." }];
-  return h("section", { class: "stages pad" },
-    h("h2", { class: "sec-head", "data-rise": 0 }, "zo gaat een ronde"),
-    h("div", { class: "stage-bar", "data-ui": "" }, steps.map((x, i) => h("div", { class: `seg f-${x.f}`, style: `flex-grow:${x.w}`, "data-rise": 80 + i * 90 }, h("span", { class: "seg-dur" }, x.dur), h("span", { class: "seg-t" }, x.t)))),
-    h("ol", { class: "stage-notes" }, steps.map((x, i) => h("li", { style: `flex-grow:${x.w}`, "data-rise": 200 + i * 90 }, x.t))));
+    ["Eerst schat één speler", "Die krijgt een vraag over zichzelf en vult stiekem een getal in.", "± 20 seconden"],
+    ["Dan raadt de rest", "Niet het echte antwoord: wat die speler zelf heeft ingevuld.", "45 seconden"],
+    ["Iedereen scoort", "Hoe dichterbij, hoe meer punten. Wie het dichtst zit krijgt 250 extra.", "± 15 seconden"]];
+  return h("div", { class: "page" }, bar(),
+    h("main", { class: "col" },
+      h("header", { class: "greet" },
+        h("h1", { class: "title" }, "Hoe goed ken jij je vrienden?"),
+        h("p", { class: "sub" }, "Eén vriend schat iets over zichzelf, de rest raadt welk getal dat was. Eén groot scherm, iedereen op de eigen telefoon.")),
+      h("div", { class: "grid" },
+        h("form", { class: "panel s6", onsubmit: e => { e.preventDefault(); const c = cleanCode(codeIn.value); if (c.length !== 6) { err.textContent = "Een spelcode heeft 6 tekens."; return; } location.hash = c; } },
+          h("h2", { class: "panel-title" }, "Doe mee"),
+          h("p", { class: "muted" }, "Vul de code in die op het grote scherm staat, of scan de QR-code."),
+          h("div", { class: "inline" }, codeIn, h("button", { class: "btn btn-primary", type: "submit" }, "Doe mee")), err),
+        h("div", { class: "panel s6" },
+          h("h2", { class: "panel-title" }, "Host een spel"),
+          h("p", { class: "muted" }, "Open dit op een laptop of tv. Hier zet je de vragen klaar en zie je de uitslagen."),
+          h("div", { class: "inline" },
+            h("button", { class: "btn btn-primary", onclick: () => startHost(newCode()) }, "Nieuw spel"),
+            lastSt?.players ? h("button", { class: "btn btn-quiet", onclick: () => startHost(last) }, `Verder met ${last}`) : null))),
+      h("section", { class: "block" },
+        h("h2", { class: "panel-title" }, "Zo gaat een ronde"),
+        h("ol", { class: "grid steps" }, steps.map(([t, d, dur]) => h("li", { class: "panel s4 step" }, h("h3", null, t), h("p", { class: "muted" }, d), h("p", { class: "cap num" }, dur))))),
+      scoreSlider(),
+      h("footer", { class: "foot muted" }, "Spelgegevens (namen en getallen) gaan via een openbare server. Zet er niets geheims in.")));
 }
 // The live thing: drag a guess and see what it would score against Sanne's 40.
 function scoreSlider() {
   const actual = 40, max = 160;
-  const out = h("span", { class: "fig-num num" });
-  const val = h("output", { class: "slider-val num", for: "demo-guess" });
+  const out = h("span", { class: "big-fig num" });
+  const val = h("output", { class: "kpi num", for: "demo-guess" });
   const dot = h("span", { class: "mini-dot" }, h("span", { class: "mini-lab num" }));
   const upd = g => {
     val.textContent = g; dot.firstChild.textContent = `jij ${g}`;
@@ -797,52 +638,32 @@ function scoreSlider() {
   };
   const inp = h("input", { type: "range", id: "demo-guess", min: 0, max, step: 1, value: 25, oninput: e => upd(+e.target.value) });
   upd(25);
-  return h("section", { class: "figure f-teal pad" },
-    h("h2", { class: "fig-q", "data-rise": 0 }, "sanne zei 40. wat gok jij?"),
-    h("div", { class: "slider", "data-ui": "", "data-rise": 100 },
-      h("div", { class: "slider-top" }, h("label", { for: "demo-guess" }, "jouw gok"), val), inp,
-      h("div", { class: "mini-tape", "aria-hidden": "true" },
-        h("div", { class: "tape mini-rule" }),
-        h("span", { class: "mini-pin", style: `left:${(actual / max) * 100}%` }, h("span", { class: "num" }, "sanne 40")),
-        dot)),
-    h("div", { class: "fig-foot" },
-      h("p", { class: "fig", "data-rise": 160 }, out, h("span", { class: "fig-unit" }, "punten")),
-      h("p", { class: "fig-how", "data-rise": 240 }, "Punten zijn 1000 × het kleinste getal gedeeld door het grootste, allebei +1. Twee keer ernaast is ongeveer de helft. Wie het dichtst zit krijgt er 250 bij.")));
-}
-// The stand after a game night, set as a departure board; tap a row to open it.
-const DEMO_BOARD = [
-  ["fleur", "#FF7AB6", 5210, "4× dichtstbij", "las iedereen als een open boek"],
-  ["tom", "#D71E1E", 4875, "3× dichtstbij", "gokte 25 bij sanne, het was 40"],
-  ["sanne", "#FFE927", 4430, "2× dichtstbij", "het grootste raadsel van de avond"],
-  ["joris", "#1E4BD7", 4105, "2× dichtstbij", "zat bij fietsen er 6× naast"],
-  ["noor", "#0C7866", 3760, "1× dichtstbij", "won de laatste ronde met een voltreffer"],
-  ["bram", "#FF8A1E", 3390, "1× dichtstbij", "dacht dat iedereen 100 zei"],
-  ["daan", "#7FD8FF", 2980, "0× dichtstbij", "beste gok: 91% raak"],
-  ["lotte", "#B7F04A", 2615, "0× dichtstbij", "volgende keer beter"]];
-function boardShowcase() {
-  let open = 1;
-  const rows = DEMO_BOARD.map(([n, c, pts, wins, line], i) => h("button", { class: "drow", type: "button", style: pstyle(c, `--i:${i}`), "data-rise": 60 * i, "aria-expanded": "false",
-    onclick: () => { open = i; paint(); } },
-    h("span", { class: "pos num" }, i + 1), h("span", { class: "nm" }, n), h("span", { class: "fact num" }, wins), h("span", { class: "fact num" }, "8 vragen"),
-    h("span", { class: "pts num" }, pts.toLocaleString("nl-NL")), h("span", { class: "drow-detail" }, line)));
-  const paint = () => rows.forEach((r, i) => { r.classList.toggle("open", i === open); r.setAttribute("aria-expanded", String(i === open)); });
-  paint();
-  return h("section", { class: "showcase", "aria-label": "Voorbeeld van de eindstand" },
-    h("div", { class: "dboard", "data-ui": "" }, rows));
+  return h("section", { class: "grid block" },
+    h("div", { class: "panel s9" },
+      h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Sanne zei 40. Wat gok jij?"), h("label", { for: "demo-guess", class: "muted" }, "Jouw gok ", val)),
+      h("div", { class: "card", "data-ui": "" },
+        h("div", { class: "mini-tape", "aria-hidden": "true" },
+          h("div", { class: "ruler mini-rule" }),
+          h("span", { class: "mini-pin", style: `left:${(actual / max) * 100}%` }, h("span", { class: "num" }, "Sanne 40")),
+          dot),
+        inp)),
+    h("div", { class: "panel s3 score-side" },
+      h("p", { class: "muted" }, "Jouw punten"),
+      out,
+      h("p", { class: "cap" }, "1000 × kleinste gedeeld door grootste, allebei +1. Twee keer ernaast is ongeveer de helft.")));
 }
 
 /* ---------- host views ---------- */
 function hostMeta() {
   const st = S.state;
   const items = [];
-  items.push(h("span", { class: "meta" }, "code ", h("b", { class: "num" }, S.code)));
-  items.push(h("span", { class: "meta" }, h("span", { class: "dot" + (S.conn ? "" : " off") }), S.conn ? `${S.online.size} online` : "geen verbinding"));
-  if (st && st.phase !== "lobby" && st.phase !== "end") items.push(h("span", { class: "meta num" }, `vraag ${st.qi + 1} van ${st.questions.length}`));
+  items.push(h("span", { class: "pill num" }, "Code ", h("b", null, S.code)));
+  items.push(h("span", { class: "pill" }, h("span", { class: "dot" + (S.conn ? "" : " off") }), S.conn ? `${S.online.size} online` : "Geen verbinding"));
   if (st && st.phase !== "lobby") {
-    if (S.ui.confirm === "stop") items.push(h("span", { class: "confirm" }, "terug naar de lobby?", h("button", { class: "btn btn-sm btn-ink", onclick: toLobby }, "ja"), h("button", { class: "btn btn-sm btn-ghost", onclick: () => { S.ui.confirm = null; render(); } }, "nee")));
-    else items.push(h("button", { class: "linkbtn", onclick: () => { S.ui.confirm = "stop"; render(); } }, "lobby"));
+    if (S.ui.confirm === "stop") items.push(h("span", { class: "confirm" }, "Terug naar de lobby?", h("button", { class: "btn btn-sm btn-primary", onclick: toLobby }, "Ja"), h("button", { class: "btn btn-sm btn-quiet", onclick: () => { S.ui.confirm = null; render(); } }, "Nee")));
+    else items.push(h("button", { class: "linkbtn", onclick: () => { S.ui.confirm = "stop"; render(); } }, "Lobby"));
   }
-  if (!st || st.phase === "lobby") items.push(h("button", { class: "linkbtn", onclick: () => { location.hash = ""; } }, "sluiten"));
+  if (!st || st.phase === "lobby") items.push(h("button", { class: "linkbtn", onclick: () => { location.hash = ""; } }, "Sluiten"));
   return items;
 }
 function viewHost() {
@@ -852,18 +673,18 @@ function viewHost() {
   if (S.ui.saveErr) notes.push(h("p", { class: "notice warn" }, S.ui.saveErr));
   if (!S.conn && S.everConnected) notes.push(h("p", { class: "notice warn" }, "Verbinding met de telefoons is weg. Het spel probeert het opnieuw; je kunt intussen antwoorden op dit scherm invullen."));
   else if (!S.conn && S.ui.connSlow) notes.push(h("p", { class: "notice warn" }, "Kan de verbindingsserver niet bereiken. Telefoons kunnen pas meedoen als dit lukt; je kunt wel op dit scherm spelen."));
-  const body = !st ? h("p", { class: "pad" }, "laden…")
+  const body = !st ? h("p", { class: "sub" }, "Laden…")
     : st.phase === "lobby" ? hostLobby(st)
     : st.phase === "answer" ? hostAnswer(st)
     : st.phase === "guess" ? hostGuess(st)
     : st.phase === "reveal" ? hostReveal(st)
     : st.phase === "scores" ? hostScores(st)
     : hostEnd(st);
-  return h("div", { class: "page" }, bar(hostMeta()), ...notes, body);
+  return h("div", { class: "page" }, bar(hostMeta()), h("main", { class: "col" }, ...notes, body));
 }
 
 function hostLobby(st) {
-  const addInput = h("input", { id: "add-name", "data-keep": true, class: "field", placeholder: "naam", maxlength: 24, autocomplete: "off", "aria-label": "Naam van speler" });
+  const addInput = h("input", { id: "add-name", "data-keep": true, class: "field", placeholder: "Naam", maxlength: 24, autocomplete: "off", "aria-label": "Naam van speler" });
   const add = e => {
     e.preventDefault();
     const n = cleanName(addInput.value); if (!n) return;
@@ -876,27 +697,7 @@ function hostLobby(st) {
     st.players = st.players.filter(p => p.id !== id);
     st.questions.forEach(q => { if (q.subject === id) q.subject = null; });
   });
-
-  const players = h("section", { class: "lobby-players" },
-    h("div", { class: "sec-row" }, h("h2", { class: "sec-head-s" }, "spelers"), h("span", { class: "count num" }, st.players.length)),
-    st.players.length
-      ? h("div", { class: "pblocks" }, st.players.map(p => h("div", { class: "pblock", style: pstyle(p.color) },
-          h("span", { class: "nm" }, p.name),
-          S.online.has(p.id) ? h("span", { class: "on" }, "online") : null,
-          h("button", { class: "x", title: `${p.name} verwijderen`, "aria-label": `${p.name} verwijderen`, onclick: () => removePl(p.id) }, icon("x")))))
-      : h("p", { class: "empty" }, "Nog niemand. Scan de code met je telefoon, of voeg hieronder iemand toe. Je hebt er minstens twee nodig."),
-    h("form", { class: "add-row", onsubmit: add }, addInput, h("button", { class: "btn btn-ink", type: "submit" }, "voeg toe")),
-    h("p", { class: "hint" }, "Iemand zonder telefoon? Voeg die hier toe en tik tijdens het spel op de naam om het antwoord in te vullen."));
-
-  const opts = id => [h("option", { value: "" }, "over wie?"), ...st.players.map(p => h("option", { value: p.id, selected: p.id === id }, p.name))];
-  const qlist = h("div", { class: "qlist" }, st.questions.map((q, i) => h("div", { class: "qrow" },
-    h("span", { class: "n num" }, i + 1),
-    h("select", { class: "field", id: `qs-${q.id}`, "aria-label": `Onderwerp van vraag ${i + 1}`, onchange: e => mutate(st => { const x = st.questions.find(y => y.id === q.id); if (x) x.subject = e.target.value || null; }) }, opts(q.subject)),
-    h("input", { class: "field q", id: `qt-${q.id}`, value: q.text, maxlength: 160, placeholder: "Typ een vraag met een getal als antwoord", "aria-label": `Vraag ${i + 1}`,
-      oninput: e => { const x = S.state.questions.find(y => y.id === q.id); if (x) { x.text = e.target.value.slice(0, 160); save(); } },
-      onchange: () => render() }),
-    h("button", { class: "x", "aria-label": `Vraag ${i + 1} verwijderen`, onclick: () => mutate(st => { st.questions = st.questions.filter(y => y.id !== q.id); }) }, icon("x")))));
-
+  const opts = id => [h("option", { value: "" }, "Over wie?"), ...st.players.map(p => h("option", { value: p.id, selected: p.id === id }, p.name))];
   const fromBank = () => mutate(st => {
     const used = new Set(st.questions.map(q => q.text));
     const left = BANK.filter(t => !used.has(t));
@@ -916,106 +717,126 @@ function hostLobby(st) {
     const order = shuffle(st.players.map(p => p.id));
     if (order.length) st.questions.forEach((q, i) => { q.subject = order[i % order.length]; });
   });
-
   const counts = {}; st.players.forEach(p => counts[p.id] = 0);
   st.questions.forEach(q => { if (counts[q.subject] != null) counts[q.subject]++; });
   const okQs = playable(st);
   const reason = st.players.length < 2 ? "Voeg minstens twee spelers toe." : !okQs.length ? "Geef minstens één vraag een onderwerp." : null;
-
-  const questions = h("section", { class: "lobby-questions" },
-    h("div", { class: "sec-row" }, h("h2", { class: "sec-head-s" }, "vragen"), h("span", { class: "count num" }, `${okQs.length} klaar`)),
-    h("p", { class: "hint" }, "Elke vraag gaat over één speler. Die vult een eigen inschatting in, de rest raadt dat getal."),
-    qlist,
-    h("div", { class: "row" },
-      h("button", { class: "btn btn-sm btn-ghost", onclick: () => mutate(st => st.questions.push({ id: rid(), text: "", subject: null })) }, "+ eigen vraag"),
-      h("button", { class: "btn btn-sm btn-ghost", onclick: fromBank }, "+ uit de vragenbank"),
-      h("button", { class: "btn btn-sm btn-ink", onclick: distribute, disabled: !st.players.length }, "verdeel eerlijk"),
-      h("button", { class: "btn btn-sm btn-ghost", onclick: fill, disabled: !st.players.length, title: "Twee vragen per speler, eerlijk verdeeld" }, "vul aan tot 2 per speler")),
-    st.players.length ? h("div", { class: "counts" }, st.players.map(p => h("span", { class: counts[p.id] ? "" : "warn" }, `${p.name}: ${counts[p.id]}`))) : null);
-
-  const go = h("section", { class: "lobby-go" },
-    h("label", { class: "row", for: "set-timer" }, h("span", null, "tijd om te raden"),
-      h("select", { id: "set-timer", class: "field", style: "width:auto", onchange: e => mutate(st => st.settings.timer = +e.target.value) },
-        [0, 20, 30, 45, 60, 90].map(t => h("option", { value: t, selected: st.settings.timer === t }, t ? `${t} seconden` : "geen timer")))),
-    h("label", { class: "row", for: "set-bonus" },
-      h("input", { type: "checkbox", id: "set-bonus", checked: st.settings.bonus, onchange: e => mutate(st => st.settings.bonus = e.target.checked) }),
-      h("span", null, "+250 voor wie het dichtst zat")),
-    h("div", { class: "row go-right" },
-      reason ? h("span", { class: "hint" }, reason) : null,
-      h("button", { class: "btn btn-red btn-big", disabled: !!reason, onclick: startGame }, "start spel")));
-
-  return h("div", { class: "lobby" }, joinPoster(), players, questions, go);
-}
-
-function joinUrl() { return location.origin + location.pathname + "#" + S.code; }
-function joinPoster() {
   const url = joinUrl();
-  const qr = h("div", { class: "qr", role: "img", "aria-label": "QR-code om mee te doen" });
-  try { const q = qrcode(0, "M"); q.addData(url); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 1, scalable: true }); } catch { qr.hidden = true; }
-  const copyBtn = h("button", { class: "btn btn-sm btn-ink", type: "button", onclick: e => {
-    const b = e.currentTarget;
-    navigator.clipboard?.writeText(url).then(() => { b.textContent = "gekopieerd"; }, () => { b.textContent = "kopiëren lukte niet"; });
-  } }, "kopieer link");
-  return h("section", { class: "join-poster f-yellow" },
-    h("h1", { class: "jp-lead" }, "doe mee met je telefoon"),
-    h("p", { class: "jp-code num" }, S.code),
-    h("div", { class: "jp-row" }, qr, h("div", { class: "jp-side" }, h("p", { class: "url" }, url), copyBtn)));
+
+  return h("div", { class: "stack-l" },
+    h("header", { class: "greet" },
+      h("h1", { class: "title" }, `${hour()}. Doe mee met code `, h("span", { class: "accent num" }, S.code), "."),
+      h("p", { class: "sub" }, st.players.length ? `${st.players.length} ${st.players.length === 1 ? "speler" : "spelers"}, ${okQs.length} ${okQs.length === 1 ? "vraag" : "vragen"} klaar.` : "Nog niemand binnen. Scan de QR-code of open de link op je telefoon.")),
+    h("div", { class: "grid" },
+      h("section", { class: "panel s9" },
+        h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Spelers"), h("span", { class: "chip num" }, st.players.length)),
+        st.players.length
+          ? h("div", { class: "rows" }, st.players.map(p => h("div", { class: "rowcard" },
+              person(p),
+              S.online.has(p.id) ? h("span", { class: "tag ok" }, "online") : h("span", { class: "tag" }, "op dit scherm"),
+              h("button", { class: "icon-btn", title: `${p.name} verwijderen`, "aria-label": `${p.name} verwijderen`, onclick: () => removePl(p.id) }, icon("x")))))
+          : h("p", { class: "muted empty" }, "Spelers verschijnen hier zodra ze de code invullen. Je hebt er minstens twee nodig."),
+        h("form", { class: "inline", onsubmit: add }, addInput, h("button", { class: "btn btn-quiet", type: "submit" }, "Voeg toe")),
+        h("p", { class: "cap" }, "Iemand zonder telefoon? Voeg die hier toe en tik tijdens het spel op de naam om het antwoord in te vullen.")),
+      h("section", { class: "panel s3 join" },
+        h("h2", { class: "panel-title" }, "Doe mee"),
+        joinQr(url),
+        h("p", { class: "code-big num" }, S.code),
+        h("p", { class: "cap url" }, url),
+        copyLink(url))),
+    h("section", { class: "panel" },
+      h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Vragen"), h("span", { class: "chip num" }, `${okQs.length} klaar`)),
+      h("div", { class: "qlist" }, st.questions.map((q, i) => h("div", { class: "qrow" },
+        h("span", { class: "n num" }, i + 1),
+        h("select", { class: "field", id: `qs-${q.id}`, "aria-label": `Onderwerp van vraag ${i + 1}`, onchange: e => mutate(st => { const x = st.questions.find(y => y.id === q.id); if (x) x.subject = e.target.value || null; }) }, opts(q.subject)),
+        h("input", { class: "field q", id: `qt-${q.id}`, value: q.text, maxlength: 160, placeholder: "Typ een vraag met een getal als antwoord", "aria-label": `Vraag ${i + 1}`,
+          oninput: e => { const x = S.state.questions.find(y => y.id === q.id); if (x) { x.text = e.target.value.slice(0, 160); save(); } },
+          onchange: () => render() }),
+        h("button", { class: "icon-btn", "aria-label": `Vraag ${i + 1} verwijderen`, onclick: () => mutate(st => { st.questions = st.questions.filter(y => y.id !== q.id); }) }, icon("x"))))),
+      h("div", { class: "inline wrap" },
+        h("button", { class: "btn btn-quiet btn-sm", onclick: () => mutate(st => st.questions.push({ id: rid(), text: "", subject: null })) }, "Eigen vraag"),
+        h("button", { class: "btn btn-quiet btn-sm", onclick: fromBank }, "Uit de vragenbank"),
+        h("button", { class: "btn btn-quiet btn-sm", onclick: distribute, disabled: !st.players.length }, "Verdeel eerlijk"),
+        h("button", { class: "btn btn-quiet btn-sm", onclick: fill, disabled: !st.players.length, title: "Twee vragen per speler, eerlijk verdeeld" }, "Vul aan tot 2 per speler")),
+      st.players.length ? h("div", { class: "inline wrap" }, st.players.map(p => h("span", { class: "tag" + (counts[p.id] ? "" : " warn") }, `${p.name}: ${counts[p.id]}`))) : null),
+    h("section", { class: "actionbar" },
+      h("label", { class: "inline", for: "set-timer" }, h("span", { class: "muted" }, "Tijd om te raden"),
+        h("select", { id: "set-timer", class: "field", style: "width:auto", onchange: e => mutate(st => st.settings.timer = +e.target.value) },
+          [0, 20, 30, 45, 60, 90].map(t => h("option", { value: t, selected: st.settings.timer === t }, t ? `${t} seconden` : "Geen timer")))),
+      h("label", { class: "inline", for: "set-bonus" },
+        h("input", { type: "checkbox", id: "set-bonus", checked: st.settings.bonus, onchange: e => mutate(st => st.settings.bonus = e.target.checked) }),
+        h("span", { class: "muted" }, "250 extra voor wie het dichtst zat")),
+      h("span", { class: "spacer" }),
+      reason ? h("span", { class: "cap" }, reason) : null,
+      h("button", { class: "btn btn-primary btn-lg", disabled: !!reason, onclick: startGame }, "Start spel")));
 }
-function about(st, subjectLabel) {
+function joinUrl() { return location.origin + location.pathname + "#" + S.code; }
+function joinQr(url) {
+  const qr = h("div", { class: "qr", role: "img", "aria-label": "QR-code om mee te doen" });
+  try { const q = qrcode(0, "M"); q.addData(url); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch { qr.hidden = true; }
+  return qr;
+}
+function copyLink(url) {
+  return h("button", { class: "btn btn-quiet btn-sm", type: "button", onclick: e => {
+    const b = e.currentTarget;
+    navigator.clipboard?.writeText(url).then(() => { b.textContent = "Gekopieerd"; }, () => { b.textContent = "Kopiëren lukte niet"; });
+  } }, "Kopieer link");
+}
+function qMeta(st, extra) {
   const q = curQ(st);
-  return h("p", { class: "about" }, "over ", h("span", { class: "who-chip", style: pstyle(pcolor(st, q.subject)) }, subjectLabel || pname(st, q.subject)));
+  return h("p", { class: "sub qmeta" }, "Over ", person(player(st, q.subject)), h("span", { class: "sep" }, "·"), `vraag ${st.qi + 1} van ${st.questions.length}`, extra ? [h("span", { class: "sep" }, "·"), extra] : null);
 }
 function manualBox(st, id, secret) {
-  const inp = h("input", { id: `man-${id}`, "data-keep": true, class: "field", type: secret ? "password" : "text", inputmode: "decimal", autocomplete: "off", placeholder: "getal", "aria-label": `Antwoord van ${pname(st, id)}` });
+  const inp = h("input", { id: `man-${id}`, "data-keep": true, class: "field", type: secret ? "password" : "text", inputmode: "decimal", autocomplete: "off", placeholder: "Getal", "aria-label": `Antwoord van ${pname(st, id)}` });
   const err = h("span", { class: "form-err" });
   setTimeout(() => inp.focus(), 0);
-  return h("form", { class: "manual", onsubmit: e => { e.preventDefault(); const v = num(inp.value); if (v == null) { err.textContent = "Vul een getal in, 0 of hoger."; return; } manualSubmit(id, v); } },
-    h("span", null, secret ? `laat ${pname(st, id)} hier stiekem typen:` : `antwoord van ${pname(st, id)}:`), inp,
-    h("button", { class: "btn btn-sm btn-ink", type: "submit" }, "opslaan"),
-    h("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => { S.ui.manual = null; render(); } }, "annuleer"), err);
+  return h("form", { class: "panel inline manual", onsubmit: e => { e.preventDefault(); const v = num(inp.value); if (v == null) { err.textContent = "Vul een getal in, 0 of hoger."; return; } manualSubmit(id, v); } },
+    h("span", null, secret ? `Laat ${pname(st, id)} hier stiekem typen:` : `Antwoord van ${pname(st, id)}:`), inp,
+    h("button", { class: "btn btn-primary btn-sm", type: "submit" }, "Opslaan"),
+    h("button", { class: "btn btn-quiet btn-sm", type: "button", onclick: () => { S.ui.manual = null; render(); } }, "Annuleer"), err);
 }
 
 function hostAnswer(st) {
   const q = curQ(st), in_ = st.pending.subject != null, nm = pname(st, q.subject);
-  return h("div", { class: "phase " + animOnce("ans-" + st.gameId + st.qi) },
-    h("div", { class: "phase-main pad" },
-      about(st),
-      h("h1", { class: "q-big" }, q.text),
-      h("p", { class: "phase-status" }, in_ ? `${nm} heeft ingevuld. zo meteen mag de rest raden.` : [`${nm} vult nu stiekem een eigen inschatting in `, dots()])),
-    S.ui.manual === q.subject ? h("div", { class: "pad" }, manualBox(st, q.subject, true)) : null,
-    h("div", { class: "phase-band pad" },
-      h("button", { class: "btn btn-ghost", onclick: skipQuestion }, "sla vraag over"),
+  return h("div", { class: "stack-l " + animOnce("ans-" + st.gameId + st.qi) },
+    h("header", { class: "greet" }, h("h1", { class: "title q-title" }, q.text), qMeta(st)),
+    h("section", { class: "panel status-panel" },
+      in_ ? h("p", { class: "status" }, h("span", { class: "tag ok" }, "Ingevuld"), `${nm} heeft een eigen inschatting ingevuld. Zo meteen mag de rest raden.`)
+          : h("p", { class: "status" }, avatar(player(st, q.subject), "lg"), h("span", null, `${nm} vult nu stiekem een eigen inschatting in `, dots()))),
+    S.ui.manual === q.subject ? manualBox(st, q.subject, true) : null,
+    h("section", { class: "actionbar" },
+      h("button", { class: "btn btn-quiet", onclick: skipQuestion }, "Sla vraag over"),
       h("span", { class: "spacer" }),
-      !in_ ? h("button", { class: "btn btn-ghost", onclick: () => { S.ui.manual = q.subject; render(); } }, `invullen namens ${nm}`) : null,
-      h("button", { class: "btn btn-ink btn-big", disabled: !in_, onclick: goGuess }, "start raden")));
+      !in_ ? h("button", { class: "btn btn-quiet", onclick: () => { S.ui.manual = q.subject; render(); } }, `Invullen namens ${nm}`) : null,
+      h("button", { class: "btn btn-primary btn-lg", disabled: !in_, onclick: goGuess }, "Start raden")));
 }
 function cdLeft(st) { return st.endsAt ? Math.max(0, Math.ceil((st.endsAt - Date.now()) / 1000)) : null; }
 function hostGuess(st) {
   const q = curQ(st), g = guessers(st), inCount = g.filter(p => st.pending.guesses[p.id] != null).length;
   const left = cdLeft(st);
-  return h("div", { class: "phase " + animOnce("gue-" + st.gameId + st.qi) },
-    h("div", { class: "phase-main guess-main pad" },
-      h("div", { class: "guess-q" },
-        about(st),
-        h("h1", { class: "q-mid" }, q.text),
-        h("p", { class: "phase-status" }, `wat heeft ${pname(st, q.subject)} ingevuld?`)),
-      left != null ? h("div", { class: "timer" + (left <= 5 ? " low" : ""), "data-cd": true, "aria-live": "off" }, left) : null),
-    h("div", { class: "tiles-wrap pad" },
-      h("div", { class: "sec-row" }, h("h2", { class: "sec-head-s" }, "antwoorden"), h("span", { class: "count num" }, `${inCount} van ${g.length} binnen`)),
-      h("div", { class: "tiles" }, g.map(p => {
-        const has = st.pending.guesses[p.id] != null;
-        return h("button", { class: "tile" + (has ? " in" : ""), style: pstyle(p.color), onclick: () => { S.ui.manual = p.id; render(); }, title: "Tik om het antwoord in te vullen" },
-          h("span", { class: "nm" }, p.name), h("span", { class: "st" }, has ? "binnen" : S.online.has(p.id) ? "denkt na…" : "tik om in te vullen"));
-      }))),
-    S.ui.manual && S.ui.manual !== q.subject && player(st, S.ui.manual) ? h("div", { class: "pad" }, manualBox(st, S.ui.manual, false)) : null,
-    h("div", { class: "phase-band pad" },
-      h("button", { class: "btn btn-ghost", onclick: skipQuestion }, "sla vraag over"),
+  return h("div", { class: "stack-l " + animOnce("gue-" + st.gameId + st.qi) },
+    h("header", { class: "greet" }, h("h1", { class: "title q-title" }, q.text), qMeta(st, `wat heeft ${pname(st, q.subject)} ingevuld?`)),
+    h("div", { class: "grid" },
+      h("section", { class: "panel s9" },
+        h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Antwoorden"), h("span", { class: "chip num" }, `${inCount} van ${g.length} binnen`)),
+        h("div", { class: "rows" }, g.map(p => {
+          const has = st.pending.guesses[p.id] != null;
+          return h("button", { class: "rowcard as-btn" + (has ? " done" : ""), onclick: () => { S.ui.manual = p.id; render(); }, title: "Klik om het antwoord in te vullen" },
+            person(p), has ? h("span", { class: "tag ok" }, "Binnen") : h("span", { class: "tag" }, S.online.has(p.id) ? "Denkt na…" : "Klik om in te vullen"));
+        }))),
+      h("section", { class: "panel s3 tile-kpi" },
+        h("p", { class: "muted" }, left != null ? "Tijd over" : "Binnen"),
+        left != null ? h("p", { class: "timer num" + (left <= 5 ? " low" : ""), "data-cd": true }, left) : h("p", { class: "timer num" }, `${inCount}/${g.length}`),
+        h("p", { class: "cap" }, left != null ? "seconden" : "antwoorden"))),
+    S.ui.manual && S.ui.manual !== q.subject && player(st, S.ui.manual) ? manualBox(st, S.ui.manual, false) : null,
+    h("section", { class: "actionbar" },
+      h("button", { class: "btn btn-quiet", onclick: skipQuestion }, "Sla vraag over"),
       h("span", { class: "spacer" }),
-      h("button", { class: "btn btn-ink btn-big", onclick: reveal, disabled: !inCount }, inCount === g.length ? "onthul" : "onthul nu")));
+      h("button", { class: "btn btn-primary btn-lg", onclick: reveal, disabled: !inCount }, inCount === g.length ? "Onthul" : "Onthul nu")));
 }
 
 function numberLine(st, r) {
-  const entries = Object.entries(r.guesses).map(([id, v]) => ({ id, v, name: pname(st, id), color: pcolor(st, id) }));
+  const entries = Object.entries(r.guesses).map(([id, v]) => ({ id, v, p: player(st, id), name: pname(st, id), color: pcolor(st, id) }));
   const vals = [r.actual, ...entries.map(e => e.v)];
   const lo = Math.min(...vals), hi = Math.max(...vals);
   const useLog = (hi + 1) / (lo + 1) > 25;
@@ -1036,45 +857,44 @@ function numberLine(st, r) {
   const lastX = [];
   sorted.forEach(e => { let r_ = lastX.findIndex(x => e.x - x > 13); if (r_ === -1) { r_ = lastX.length < 6 ? lastX.length : lastX.indexOf(Math.min(...lastX)); } lastX[r_] = e.x; e.row = r_; });
   const rows = Math.max(1, lastX.length);
-  return h("div", { class: "nl-wrap" }, h("div", { class: "nl", style: `height:${84 + rows * 34}px`, role: "img", "aria-label": `Meetlint: het eigen antwoord was ${fmt(r.actual)}` },
-    h("div", { class: "rule tape" }),
+  return h("div", { class: "nl-wrap" }, h("div", { class: "nl", style: `height:${78 + rows * 34}px`, role: "img", "aria-label": `Meetlint: het eigen antwoord was ${fmt(r.actual)}` },
+    h("div", { class: "ruler rule" }),
     ticks.map(t => h("span", { class: "tick num", style: `left:${pos(t)}%` }, fmt(t))),
     sorted.map((e, i) => h("div", { class: "g", style: pstyle(e.color, `left:${e.x}%;--i:${i}`) },
-      h("span", { class: "d" }), h("span", { class: "stem", style: `height:${34 + e.row * 34}px` }), h("span", { class: "lab num", title: `${e.name}: ${fmt(e.v)}` }, `${e.name} ${fmt(e.v)}`))),
+      h("span", { class: "d" }), h("span", { class: "stem", style: `height:${30 + e.row * 34}px` }), h("span", { class: "lab num", title: `${e.name}: ${fmt(e.v)}` }, `${e.name} ${fmt(e.v)}`))),
     h("div", { class: "pin", style: `left:${pos(r.actual)}%;--n:${sorted.length}` }, h("span", { class: "bub num" }, fmt(r.actual)), h("span", { class: "needle" }))),
-    useLog ? h("p", { class: "hint" }, "Logaritmische schaal: de antwoorden liggen ver uit elkaar.") : null);
+    useLog ? h("p", { class: "cap" }, "Logaritmische schaal: de antwoorden liggen ver uit elkaar.") : null);
 }
 function offText(g, a) {
   if (g === a) return "precies goed";
   const r = (g + 1) / (a + 1);
   return r > 1 ? `${fmt(Math.round(r * 10) / 10)}× te hoog` : `${fmt(Math.round((1 / r) * 10) / 10)}× te laag`;
 }
-// One round as a departure board; the closest guess is the open row.
 function roundRanking(st, r, highlightId) {
   const rows = st.players.filter(p => p.id !== r.subject).map(p => ({ p, g: r.guesses[p.id], pts: r.points[p.id] || 0, acc: r.acc[p.id] }))
     .sort((x, y) => y.pts - x.pts || x.p.name.localeCompare(y.p.name));
-  return h("div", { class: "board", "data-ui": "" }, rows.map((x, i) => {
+  return h("div", { class: "rows" }, rows.map((x, i) => {
     const best = r.closest.includes(x.p.id);
-    return h("div", { class: "brow" + (best ? " open" : ""), style: pstyle(x.p.color, `--i:${i}`) },
+    return h("div", { class: "rowcard rank" + (best ? " best" : ""), style: `--i:${i}` },
       h("span", { class: "pos num" }, x.g == null ? "–" : i + 1),
-      h("span", { class: "nm" }, x.p.name + (x.p.id === highlightId ? " (jij)" : "")),
-      h("span", { class: "fact num" }, x.g == null ? "geen antwoord" : `gokte ${fmt(x.g)}`),
-      h("span", { class: "fact num" }, x.g == null ? "" : `${pct(x.acc)} raak`),
-      h("span", { class: "pts num" }, `+${x.pts}`),
-      best ? h("p", { class: "open-detail" }, `${x.acc === 1 ? "voltreffer" : "dichtstbij"} · ${offText(x.g, r.actual)} · inclusief ${st.settings.bonus ? "250 bonuspunten" : "geen bonus"}`) : null);
+      person(x.p, x.p.id === highlightId ? " (jij)" : ""),
+      best ? h("span", { class: "tag ok" }, x.acc === 1 ? "Voltreffer" : "Dichtstbij") : h("span"),
+      h("span", { class: "det num" }, x.g == null ? "geen antwoord" : `gokte ${fmt(x.g)} · ${pct(x.acc)} · ${offText(x.g, r.actual)}`),
+      h("span", { class: "pts num" }, `+${x.pts}`));
   }));
 }
 function hostReveal(st) {
   const r = st.results[st.results.length - 1];
   const anim = animOnce("rev-" + st.gameId + st.results.length);
-  const nm = pname(st, r.subject);
-  return h("div", { class: "phase " + anim },
-    h("div", { class: "phase-main pad reveal-main" },
-      h("p", { class: "reveal-q" }, r.text),
-      h("div", { class: "actual" }, h("span", { class: "big num" }, fmt(r.actual)), h("span", { class: "who" }, `schatte ${nm} zelf`))),
-    h("div", { class: "seam" }, h("div", { class: "pad" }, Object.keys(r.guesses).length ? numberLine(st, r) : h("p", { class: "lead" }, "Niemand heeft geraden."))),
-    h("div", { class: "under pad" }, roundRanking(st, r),
-      h("div", { class: "controls" }, h("button", { class: "btn btn-red btn-big", onclick: toScores }, "tussenstand"))));
+  const subj = player(st, r.subject);
+  return h("div", { class: "stack-l " + anim },
+    h("header", { class: "greet" }, h("h1", { class: "title" }, `${pname(st, r.subject)} schatte zelf `, h("span", { class: "accent num" }, fmt(r.actual)), "."), h("p", { class: "sub" }, r.text)),
+    h("section", { class: "panel" },
+      h("div", { class: "card", "data-ui": "" }, Object.keys(r.guesses).length ? numberLine(st, r) : h("p", { class: "muted" }, "Niemand heeft geraden."))),
+    h("section", { class: "panel" },
+      h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Punten deze ronde"), subj ? h("span", { class: "chip" }, `over ${subj.name}`) : null),
+      roundRanking(st, r)),
+    h("section", { class: "actionbar" }, h("span", { class: "spacer" }), h("button", { class: "btn btn-primary btn-lg", onclick: toScores }, "Tussenstand")));
 }
 function leaderboard(st, highlightId, limit) {
   const now = ranking(st), before = ranking(st, st.results.length - 1);
@@ -1083,24 +903,26 @@ function leaderboard(st, highlightId, limit) {
   const prevPos = {}; before.forEach((x, i) => prevPos[x.p.id] = i);
   let list = now.map((x, i) => ({ ...x, i }));
   if (limit && list.length > limit) { const mine = list.find(x => x.p.id === highlightId); list = list.slice(0, limit); if (mine && mine.i >= limit) list.push(mine); }
-  return h("div", { class: "board lb", "data-ui": "" }, list.map(x => {
+  return h("div", { class: "rows" }, list.map(x => {
     const d = last?.points[x.p.id] || 0, mv = st.results.length > 1 ? (prevPos[x.p.id] ?? x.i) - x.i : 0;
-    return h("div", { class: "brow lrow", style: pstyle(x.p.color, `--w:${(x.total / max) * 100}%;--i:${x.i}`) },
+    return h("div", { class: "rowcard lrow" + (x.i === 0 ? " lead" : ""), style: `--w:${(x.total / max) * 100}%;--i:${x.i}` },
       h("span", { class: "pos num" }, x.i + 1),
-      h("span", { class: "nm" }, x.p.name + (x.p.id === highlightId ? " (jij)" : ""),
-        mv > 0 ? h("span", { class: "mv up", "aria-label": `${mv} plek omhoog` }, icon("up"), mv) : mv < 0 ? h("span", { class: "mv down", "aria-label": `${-mv} plek omlaag` }, icon("down"), -mv) : null),
+      person(x.p, x.p.id === highlightId ? " (jij)" : ""),
       h("span", { class: "barcell" }, h("span", { class: "fillbar" })),
       h("span", { class: "tot num" }, x.total.toLocaleString("nl-NL")),
-      h("span", { class: "delta num" }, d ? `+${d}` : "+0"));
+      h("span", { class: "delta num" }, d ? `+${d}` : "+0",
+        mv > 0 ? h("span", { class: "mv up", "aria-label": `${mv} plek omhoog` }, icon("up"), mv) : mv < 0 ? h("span", { class: "mv down", "aria-label": `${-mv} plek omlaag` }, icon("down"), -mv) : null));
   }));
 }
 function hostScores(st) {
   const anim = animOnce("sc-" + st.gameId + st.results.length);
   const last = st.qi + 1 >= st.questions.length;
-  return h("div", { class: "phase " + anim },
-    h("div", { class: "phase-main pad" }, h("h1", { class: "shout-m" }, "de stand"), h("p", { class: "phase-status" }, `na ${st.results.length} ${st.results.length === 1 ? "vraag" : "vragen"}`)),
-    h("div", { class: "pad" }, leaderboard(st)),
-    h("div", { class: "phase-band pad" }, h("span", { class: "spacer" }), h("button", { class: "btn btn-ink btn-big", onclick: nextQuestion }, last ? "naar de eindstand" : "volgende vraag")));
+  const top = ranking(st)[0];
+  return h("div", { class: "stack-l " + anim },
+    h("header", { class: "greet" }, h("h1", { class: "title" }, `De stand na ${st.results.length} ${st.results.length === 1 ? "vraag" : "vragen"}.`),
+      top ? h("p", { class: "sub" }, `${top.p.name} staat bovenaan met ${top.total.toLocaleString("nl-NL")} punten.`) : null),
+    h("section", { class: "panel" }, leaderboard(st)),
+    h("section", { class: "actionbar" }, h("span", { class: "spacer" }), h("button", { class: "btn btn-primary btn-lg", onclick: nextQuestion }, last ? "Naar de eindstand" : "Volgende vraag")));
 }
 
 /* ---------- end stats ---------- */
@@ -1131,34 +953,29 @@ function progressChart(st) {
   const cum = {}; st.players.forEach(p => cum[p.id] = [0]);
   st.results.forEach(r => st.players.forEach(p => { const a = cum[p.id]; a.push(a[a.length - 1] + (r.points[p.id] || 0)); }));
   const max = Math.max(1, ...Object.values(cum).map(a => a[a.length - 1]));
+  const leader = ranking(st)[0]?.p.id;
   const x = i => P.l + i * (W - P.l - P.r) / n, y = v => H - P.b - v / max * (H - P.t - P.b);
   const grid = [0, .5, 1].map(f => Math.round(max * f));
   const ends = st.players.map(p => ({ p, v: cum[p.id][n], y: y(cum[p.id][n]) })).sort((a, b) => a.y - b.y);
   for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 15) ends[i].y = ends[i - 1].y + 15;
+  const ink = id => id === leader ? "#1b6e66" : "#b9b9b5";
   return s("svg", { viewBox: `0 0 ${W} ${Math.max(H, (ends.at(-1)?.y || 0) + 10)}`, role: "img", "aria-label": "Puntenverloop per speler" },
-    grid.map(v => s("g", {}, s("line", { x1: P.l, x2: W - P.r, y1: y(v), y2: y(v), stroke: "#3A3A3A", "stroke-width": 1 }),
-      s("text", { x: P.l - 8, y: y(v) + 4, "text-anchor": "end", fill: "#A8A8A8", "font-size": 13, "font-family": "var(--f)" }, v.toLocaleString("nl-NL")))),
-    Array.from({ length: n }, (_, i) => s("text", { x: x(i + 1), y: H - 6, "text-anchor": "middle", fill: "#A8A8A8", "font-size": 13, "font-family": "var(--f)" }, `vraag ${i + 1}`)),
-    st.players.map(p => s("polyline", { points: cum[p.id].map((v, i) => `${x(i)},${y(v)}`).join(" "), fill: "none", stroke: safeColor(p.color), "stroke-width": 4, "stroke-linejoin": "round", "stroke-linecap": "round" })),
-    st.players.map(p => s("circle", { cx: x(n), cy: y(cum[p.id][n]), r: 5, fill: safeColor(p.color) })),
-    ends.map(e => s("text", { x: x(n) + 10, y: e.y + 4, fill: safeColor(e.p.color), "font-size": 14, "font-weight": 700, "font-family": "var(--f)" }, `${e.p.name.slice(0, 14)} ${e.v.toLocaleString("nl-NL")}`)));
-}
-function podium(st, anim) {
-  const rk = ranking(st);
-  const slot = (i, cls) => { const x = rk[i]; if (!x) return h("div", { class: "pod empty-pod" }); return h("div", { class: `pod ${cls}`, style: pstyle(x.p.color) }, h("span", { class: "nm" }, x.p.name), h("div", { class: "blk" }, h("span", { class: "p num" }, i + 1), h("span", { class: "s num" }, x.total.toLocaleString("nl-NL")))); };
-  return h("div", { class: "podium " + anim }, slot(1, "p2"), slot(0, "p1"), slot(2, "p3"));
+    grid.map(v => s("g", {}, s("line", { x1: P.l, x2: W - P.r, y1: y(v), y2: y(v), stroke: "#eaeaea", "stroke-width": 1 }),
+      s("text", { x: P.l - 8, y: y(v) + 4, "text-anchor": "end", fill: "#636361", "font-size": 12, "font-family": "var(--f)" }, v.toLocaleString("nl-NL")))),
+    Array.from({ length: n }, (_, i) => s("text", { x: x(i + 1), y: H - 6, "text-anchor": "middle", fill: "#636361", "font-size": 12, "font-family": "var(--f)" }, `vraag ${i + 1}`)),
+    st.players.filter(p => p.id !== leader).map(p => s("polyline", { points: cum[p.id].map((v, i) => `${x(i)},${y(v)}`).join(" "), fill: "none", stroke: ink(p.id), "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" })),
+    leader ? s("polyline", { points: cum[leader].map((v, i) => `${x(i)},${y(v)}`).join(" "), fill: "none", stroke: ink(leader), "stroke-width": 3, "stroke-linejoin": "round", "stroke-linecap": "round" }) : null,
+    ends.map(e => s("text", { x: x(n) + 10, y: e.y + 4, fill: e.p.id === leader ? "#1b6e66" : "#636361", "font-size": 13, "font-weight": e.p.id === leader ? 600 : 400, "font-family": "var(--f)" }, `${e.p.name.slice(0, 14)} ${e.v.toLocaleString("nl-NL")}`)));
 }
 function awards(st, stats) {
-  const fields = ["red", "blue", "teal", "yellow", "red"];
-  let k = 0;
-  const A = (t, id, d) => id ? h("div", { class: `award f-${fields[k++ % fields.length]}` }, h("span", { class: "t" }, t), h("span", { class: "w" }, pname(st, id)), h("span", { class: "d" }, d)) : null;
+  const A = (t, id, d) => id ? h("div", { class: "panel s3 award" }, h("p", { class: "muted" }, t), person(player(st, id)), h("p", { class: "cap" }, d)) : null;
   const w = stats.worst;
-  return h("div", { class: "awards" },
-    stats.kenner && A("mensenkenner", stats.kenner[0], `Gemiddeld ${pct(stats.kenner[1])} raak als gokker.`),
-    stats.openBoek && A("open boek", stats.openBoek[0], `De groep zat gemiddeld ${pct(stats.openBoek[1])} goed bij deze persoon.`),
-    stats.mysterie && stats.mysterie[0] !== stats.openBoek?.[0] && A("grootste raadsel", stats.mysterie[0], `Maar ${pct(stats.mysterie[1])} raak. Niemand snapt deze persoon.`),
-    stats.wins && A("vaakst dichtstbij", stats.wins[0], `${stats.wins[1]}× de beste gok van de ronde.`),
-    w && A("grootste misser", w.id, `Gokte ${fmt(w.r.guesses[w.id])} bij “${w.r.text.slice(0, 60)}${w.r.text.length > 60 ? "…" : ""}”; ${pname(st, w.r.subject)} zei ${fmt(w.r.actual)}.`));
+  return h("div", { class: "grid" },
+    stats.kenner && A("Mensenkenner", stats.kenner[0], `Gemiddeld ${pct(stats.kenner[1])} raak als gokker.`),
+    stats.openBoek && A("Open boek", stats.openBoek[0], `De groep zat gemiddeld ${pct(stats.openBoek[1])} goed bij deze persoon.`),
+    stats.mysterie && stats.mysterie[0] !== stats.openBoek?.[0] && A("Grootste raadsel", stats.mysterie[0], `Maar ${pct(stats.mysterie[1])} raak. Niemand snapt deze persoon.`),
+    stats.wins && A("Vaakst dichtstbij", stats.wins[0], `${stats.wins[1]}× de beste gok van de ronde.`),
+    w && A("Grootste misser", w.id, `Gokte ${fmt(w.r.guesses[w.id])} bij “${w.r.text.slice(0, 60)}${w.r.text.length > 60 ? "…" : ""}”; ${pname(st, w.r.subject)} zei ${fmt(w.r.actual)}.`));
 }
 function groupTable(st, stats) {
   return h("div", { class: "tbl-wrap" }, h("table", null,
@@ -1171,19 +988,19 @@ function hostEnd(st) {
   const anim = animOnce("end-" + st.gameId);
   const stats = computeStats(st);
   const win = ranking(st)[0];
-  return h("div", { class: "phase " + anim },
-    st.results.length && win
-      ? h("section", { class: "winner pad", style: pstyle(win.p.color) }, h("h1", { class: "shout-w" }, `${win.p.name} wint`), h("p", { class: "phase-status num" }, `${win.total.toLocaleString("nl-NL")} punten na ${st.results.length} ${st.results.length === 1 ? "vraag" : "vragen"}`))
-      : h("div", { class: "pad" }, h("h1", { class: "shout-m" }, "eindstand"), h("p", { class: "lead" }, "Er zijn geen vragen gespeeld.")),
-    st.results.length ? h("div", { class: "pad" }, podium(st, anim)) : null,
-    st.results.length ? h("div", { class: "pad" }, leaderboard(st)) : null,
-    st.results.length ? h("div", { class: "pad" }, awards(st, stats)) : null,
-    st.results.length ? h("section", { class: "pad stack" }, h("h2", { class: "sec-head-s" }, "puntenverloop"), h("div", { class: "chart-wrap" }, progressChart(st))) : null,
-    st.results.length ? h("section", { class: "pad stack" }, h("h2", { class: "sec-head-s" }, "groep tegen werkelijkheid"), groupTable(st, stats)) : null,
-    h("div", { class: "phase-band pad" }, h("span", { class: "spacer" }),
+  const played = st.results.length;
+  return h("div", { class: "stack-l " + anim },
+    h("header", { class: "greet" },
+      played && win ? h("h1", { class: "title" }, `${win.p.name} wint met `, h("span", { class: "accent num" }, win.total.toLocaleString("nl-NL")), " punten.") : h("h1", { class: "title" }, "Eindstand"),
+      h("p", { class: "sub" }, played ? `Na ${played} ${played === 1 ? "vraag" : "vragen"}. Zo goed kennen jullie elkaar.` : "Er zijn geen vragen gespeeld.")),
+    played ? awards(st, stats) : null,
+    played ? h("section", { class: "panel" }, h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Eindstand")), leaderboard(st)) : null,
+    played ? h("section", { class: "panel" }, h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Puntenverloop")), h("div", { class: "card chart-wrap", "data-ui": "" }, progressChart(st))) : null,
+    played ? h("section", { class: "panel" }, h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Groep tegen werkelijkheid")), groupTable(st, stats)) : null,
+    h("section", { class: "actionbar" }, h("span", { class: "spacer" }),
       S.ui.confirm === "new"
-        ? h("span", { class: "confirm" }, "scores wissen en opnieuw beginnen?", h("button", { class: "btn btn-sm btn-red", onclick: newGame }, "ja, nieuw spel"), h("button", { class: "btn btn-sm btn-ghost", onclick: () => { S.ui.confirm = null; render(); } }, "nee"))
-        : h("button", { class: "btn btn-red btn-big", onclick: () => { S.ui.confirm = "new"; render(); } }, "nieuw spel")));
+        ? h("span", { class: "confirm" }, "Scores wissen en opnieuw beginnen?", h("button", { class: "btn btn-sm btn-primary", onclick: newGame }, "Ja, nieuw spel"), h("button", { class: "btn btn-sm btn-quiet", onclick: () => { S.ui.confirm = null; render(); } }, "Nee"))
+        : h("button", { class: "btn btn-primary btn-lg", onclick: () => { S.ui.confirm = "new"; render(); } }, "Nieuw spel")));
 }
 
 /* ---------- player views ---------- */
@@ -1192,71 +1009,68 @@ function numberForm(id, label, onSubmit, opts = {}) {
   const err = h("p", { class: "form-err", "aria-live": "polite" });
   return h("form", { class: "num-form", onsubmit: e => { e.preventDefault(); const v = num(inp.value); if (v == null) { err.textContent = "Vul een getal in, 0 of hoger. Bijvoorbeeld 12 of 3,5."; return; } err.textContent = ""; onSubmit(v); inp.blur(); } },
     h("label", { class: "lbl", for: id }, label), inp,
-    h("button", { class: "btn btn-ink btn-big", type: "submit", disabled: opts.disabled }, opts.cta || "verstuur"), err);
+    h("button", { class: "btn btn-primary btn-lg btn-block", type: "submit", disabled: opts.disabled }, opts.cta || "Verstuur"), err);
 }
 function viewPlayer() {
   const st = S.state, me0 = S.myName ? meIn(st) : null;
-  const top = bar(me0 ? [h("span", { class: "meta" }, h("span", { class: "dot", style: `background:${safeColor(me0.color)}` }), me0.name)] : null);
+  const top = bar(me0 ? [person(me0)] : null);
+  const wrap = (...kids) => h("div", { class: "page phone" }, top, h("main", { class: "col" }, ...kids));
   const connNote = !S.conn && (S.everConnected || S.ui.connSlow) ? h("p", { class: "notice warn" }, "Geen verbinding met het spel. Je telefoon probeert het opnieuw.") : null;
-  if (st?.removed?.includes(S.myPid)) return h("div", { class: "page" }, top, h("p", { class: "notice warn" }, "De host heeft je uit dit spel gehaald."));
-  if (!S.myName || !S.joined) return h("div", { class: "page" }, top, connNote, playerJoin(st));
+  if (st?.removed?.includes(S.myPid)) return wrap(h("p", { class: "notice warn" }, "De host heeft je uit dit spel gehaald."));
+  if (!S.myName || !S.joined) return wrap(connNote, playerJoin(st));
   const me = meIn(st);
-  if (!st) return h("div", { class: "page" }, top, connNote,
-    S.ui.loadNote ? h("p", { class: "notice warn" }, S.ui.loadNote) : h("p", { class: "lead pad" }, `zoeken naar spel ${S.code} `, dots()),
-    h("div", { class: "pad" }, h("button", { class: "linkbtn", onclick: () => { location.hash = ""; } }, "andere code invullen")));
-  if (!me) return h("div", { class: "page" }, top, h("div", { class: "pad stack" }, h("p", { class: "lead" }, "aanmelden bij de host ", dots()), h("p", { class: "hint" }, "Staat het grote scherm open? Daar verschijnt je naam zo.")));
+  if (!st) return wrap(connNote,
+    S.ui.loadNote ? h("p", { class: "notice warn" }, S.ui.loadNote) : h("p", { class: "sub" }, `Zoeken naar spel ${S.code} `, dots()),
+    h("div", null, h("button", { class: "linkbtn", onclick: () => { location.hash = ""; } }, "Andere code invullen")));
+  if (!me) return wrap(h("p", { class: "sub" }, "Aanmelden bij de host ", dots()), h("p", { class: "cap" }, "Staat het grote scherm open? Daar verschijnt je naam zo."));
   const body = st.phase === "lobby" ? pLobby(st, me)
     : st.phase === "answer" ? pAnswer(st, me)
     : st.phase === "guess" ? pGuess(st, me)
     : st.phase === "reveal" ? pReveal(st, me)
     : st.phase === "scores" ? pScores(st, me)
     : pEnd(st, me);
-  return h("div", { class: "page" }, top, connNote, body);
+  return wrap(connNote, body);
 }
 function playerJoin(st) {
-  const inp = h("input", { id: "join-name", "data-keep": true, class: "big-input", maxlength: 24, autocomplete: "off", placeholder: "je naam", value: S.myName || "", "aria-label": "Je naam", enterkeyhint: "go" });
-  return h("form", { class: "pad stack", onsubmit: e => { e.preventDefault(); if (!cleanName(inp.value)) return; S.joined = true; joinAs(inp.value); } },
-    h("h1", { class: "shout-m" }, "doe mee"),
-    h("p", { class: "lead" }, "Vul de naam in die je vrienden kennen. Je verschijnt dan op het grote scherm."),
-    inp, h("button", { class: "btn btn-red btn-big", type: "submit" }, "doe mee"),
-    st?.players?.length ? h("div", { class: "stack" }, h("p", { class: "hint" }, "Al in het spel:"), h("div", { class: "pblocks small" }, st.players.map(p => h("div", { class: "pblock", style: pstyle(p.color) }, h("span", { class: "nm" }, p.name))))) : null);
+  const inp = h("input", { id: "join-name", "data-keep": true, class: "field field-lg", maxlength: 24, autocomplete: "off", placeholder: "Je naam", value: S.myName || "", "aria-label": "Je naam", enterkeyhint: "go" });
+  return h("form", { class: "stack-l", onsubmit: e => { e.preventDefault(); if (!cleanName(inp.value)) return; S.joined = true; joinAs(inp.value); } },
+    h("header", { class: "greet" }, h("h1", { class: "title" }, "Doe mee."), h("p", { class: "sub" }, "Vul de naam in die je vrienden kennen. Je verschijnt dan op het grote scherm.")),
+    h("div", { class: "panel" }, inp, h("button", { class: "btn btn-primary btn-lg btn-block", type: "submit" }, "Doe mee")),
+    st?.players?.length ? h("div", { class: "panel" }, h("p", { class: "muted" }, "Al in het spel"), h("div", { class: "inline wrap" }, st.players.map(p => person(p)))) : null);
 }
 function pLobby(st, me) {
-  return h("div", { class: "pad stack" },
-    h("h1", { class: "shout-m" }, "je doet mee"),
-    h("p", { class: "lead" }, `als ${me.name}. Wacht tot de host start en laat je telefoon open.`),
-    h("div", null, h("button", { class: "linkbtn", onclick: () => { S.joined = false; render(); } }, "naam wijzigen")),
-    h("div", { class: "pblocks small" }, st.players.map(p => h("div", { class: "pblock", style: pstyle(p.color) }, h("span", { class: "nm" }, p.name + (p.id === me.id ? " (jij)" : ""))))));
+  return h("div", { class: "stack-l" },
+    h("header", { class: "greet" }, h("h1", { class: "title" }, `Je doet mee, ${me.name}.`), h("p", { class: "sub" }, "Wacht tot de host start en laat je telefoon open.")),
+    h("div", { class: "panel" }, h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Spelers"), h("span", { class: "chip num" }, st.players.length)),
+      h("div", { class: "inline wrap" }, st.players.map(p => person(p, p.id === me.id ? " (jij)" : "")))),
+    h("div", null, h("button", { class: "linkbtn", onclick: () => { S.joined = false; render(); } }, "Naam wijzigen")));
 }
 function pQ(st) {
   const q = curQ(st), mine = q.subject === meIn(st)?.id;
-  return h("div", { class: "pad stack" },
-    h("p", { class: "about" }, "over ", h("span", { class: "who-chip", style: pstyle(pcolor(st, q.subject)) }, mine ? "jou" : pname(st, q.subject)), h("span", { class: "round num" }, `vraag ${st.qi + 1} van ${st.questions.length}`)),
-    h("h1", { class: "q-phone" }, q.text));
+  return h("header", { class: "greet" }, h("h1", { class: "title q-title" }, q.text),
+    h("p", { class: "sub qmeta" }, "Over ", mine ? h("b", null, "jou") : person(player(st, q.subject)), h("span", { class: "sep" }, "·"), `vraag ${st.qi + 1} van ${st.questions.length}`));
 }
 function sentNote(recorded) {
   const mine = S.myAns && S.myAns.k === curKey(S.state) ? S.myAns.v : null;
-  if (recorded != null) return h("p", { class: "sent", "aria-live": "polite" }, `ontvangen: ${fmt(recorded)}. je kunt het nog aanpassen tot de host verder gaat.`);
-  if (mine != null) return h("p", { class: "hint", "aria-live": "polite" }, `versturen: ${fmt(mine)}…`);
+  if (recorded != null) return h("p", { class: "sent", "aria-live": "polite" }, h("span", { class: "tag ok" }, `Ontvangen: ${fmt(recorded)}`), " Je kunt het nog aanpassen tot de host verder gaat.");
+  if (mine != null) return h("p", { class: "cap", "aria-live": "polite" }, `Versturen: ${fmt(mine)}…`);
   return null;
 }
 function pAnswer(st, me) {
   const q = curQ(st);
-  if (q.subject !== me.id) return h("div", { class: "stack" }, pQ(st), h("p", { class: "lead pad" }, `${pname(st, q.subject)} vult nu een eigen inschatting in. Bedenk alvast wat je gaat raden.`));
-  return h("div", { class: "stack " + animOnce("pans-" + st.gameId + st.qi) }, pQ(st),
-    h("div", { class: "pad stack" },
-      numberForm(`ans-${st.gameId}-${q.id}`, "jouw eigen inschatting (niemand ziet het)", playerSubmit),
-      sentNote(st.pending.subject)));
+  if (q.subject !== me.id) return h("div", { class: "stack-l" }, pQ(st), h("p", { class: "panel" }, `${pname(st, q.subject)} vult nu een eigen inschatting in. Bedenk alvast wat je gaat raden.`));
+  return h("div", { class: "stack-l " + animOnce("pans-" + st.gameId + st.qi) }, pQ(st),
+    h("div", { class: "panel" }, numberForm(`ans-${st.gameId}-${q.id}`, "Jouw eigen inschatting. Niemand ziet het.", playerSubmit), sentNote(st.pending.subject)));
 }
 function pGuess(st, me) {
   const q = curQ(st), left = cdLeft(st), over = left === 0;
   const g = guessers(st), inCount = g.filter(p => st.pending.guesses[p.id] != null).length;
-  if (q.subject === me.id) return h("div", { class: "stack" }, pQ(st), h("div", { class: "pad stack" }, h("p", { class: "lead" }, "Iedereen raadt nu wat jij hebt ingevuld."), h("p", { class: "count num" }, `${inCount} van ${g.length} binnen`)));
-  return h("div", { class: "stack " + animOnce("pgue-" + st.gameId + st.qi) }, pQ(st),
-    h("div", { class: "pad stack" },
-      left != null ? h("div", { class: "timer phone-timer" + (left <= 5 ? " low" : ""), "data-cd": true }, left) : null,
-      numberForm(`g-${st.gameId}-${q.id}`, `wat heeft ${pname(st, q.subject)} ingevuld?`, playerSubmit),
-      over ? h("p", { class: "hint" }, "De tijd is om. De host onthult zo.") : null,
+  if (q.subject === me.id) return h("div", { class: "stack-l" }, pQ(st), h("div", { class: "panel" }, h("p", null, "Iedereen raadt nu wat jij hebt ingevuld."), h("p", { class: "kpi num" }, `${inCount} van ${g.length} binnen`)));
+  return h("div", { class: "stack-l " + animOnce("pgue-" + st.gameId + st.qi) }, pQ(st),
+    h("div", { class: "panel" },
+      left != null ? h("div", { class: "panel-head" }, h("span", { class: "muted" }, "Tijd over"), h("span", { class: "kpi num" + (left <= 5 ? " low" : ""), "data-cd": true }, left)) : null,
+      numberForm(`g-${st.gameId}-${q.id}`, `Wat heeft ${pname(st, q.subject)} ingevuld?`, playerSubmit),
+      over ? h("p", { class: "cap" }, "De tijd is om. De host onthult zo.") : null,
       sentNote(st.pending.guesses[me.id])));
 }
 function pReveal(st, me) {
@@ -1264,36 +1078,34 @@ function pReveal(st, me) {
   const anim = animOnce("prev-" + st.gameId + st.results.length);
   if (r.subject === me.id) {
     const accs = Object.values(r.acc), avg = accs.length ? accs.reduce((a, b) => a + b, 0) / accs.length : null;
-    return h("div", { class: "stack " + anim },
-      h("div", { class: "pad stack" }, h("p", { class: "lead" }, "jouw antwoord"), h("span", { class: "big-num num" }, fmt(r.actual)),
-        avg != null ? h("p", { class: "lead" }, `De groep zat gemiddeld ${pct(avg)} goed bij jou.`) : null),
-      h("div", { class: "under pad" }, roundRanking(st, r, me.id)));
+    return h("div", { class: "stack-l " + anim },
+      h("header", { class: "greet" }, h("h1", { class: "title" }, "Jij zei ", h("span", { class: "accent num" }, fmt(r.actual)), "."), avg != null ? h("p", { class: "sub" }, `De groep zat gemiddeld ${pct(avg)} goed bij jou.`) : null),
+      h("div", { class: "panel" }, roundRanking(st, r, me.id)));
   }
   const g = r.guesses[me.id], pts = r.points[me.id] || 0;
-  return h("div", { class: "stack " + anim },
-    h("div", { class: "pad stack" },
-      h("p", { class: "lead" }, `${pname(st, r.subject)} zei`), h("span", { class: "big-num num" }, fmt(r.actual)),
-      g == null ? h("p", { class: "lead" }, "Je hebt niet geraden.") : h("p", { class: "lead num" }, `jij gokte ${fmt(g)} · ${pct(r.acc[me.id])} raak`),
-      h("p", { class: "plus num" }, `+${pts}`)),
-    h("div", { class: "under pad" }, roundRanking(st, r, me.id)));
+  return h("div", { class: "stack-l " + anim },
+    h("header", { class: "greet" }, h("h1", { class: "title" }, `${pname(st, r.subject)} zei `, h("span", { class: "accent num" }, fmt(r.actual)), "."),
+      h("p", { class: "sub num" }, g == null ? "Je hebt niet geraden." : `Jij gokte ${fmt(g)}: ${pct(r.acc[me.id])} raak.`)),
+    h("div", { class: "panel tile-kpi" }, h("p", { class: "muted" }, "Jouw punten deze ronde"), h("p", { class: "timer num" }, `+${pts}`),
+      r.closest.includes(me.id) ? h("span", { class: "tag ok" }, r.acc[me.id] === 1 ? "Voltreffer" : "Dichtstbij") : null),
+    h("div", { class: "panel" }, roundRanking(st, r, me.id)));
 }
 function pScores(st, me) {
   const rk = ranking(st), pos = rk.findIndex(x => x.p.id === me.id);
-  return h("div", { class: "stack " + animOnce("psc-" + st.gameId + st.results.length) },
-    h("div", { class: "pad stack" }, h("p", { class: "lead" }, "jij staat"), h("span", { class: "big-num num" }, `#${pos + 1}`), h("p", { class: "lead num" }, `${(rk[pos]?.total || 0).toLocaleString("nl-NL")} punten`)),
-    h("div", { class: "pad" }, leaderboard(st, me.id, 5)));
+  return h("div", { class: "stack-l " + animOnce("psc-" + st.gameId + st.results.length) },
+    h("header", { class: "greet" }, h("h1", { class: "title" }, "Je staat ", h("span", { class: "accent num" }, `#${pos + 1}`), "."), h("p", { class: "sub num" }, `${(rk[pos]?.total || 0).toLocaleString("nl-NL")} punten`)),
+    h("div", { class: "panel" }, leaderboard(st, me.id, 5)));
 }
 function pEnd(st, me) {
   const rk = ranking(st), pos = rk.findIndex(x => x.p.id === me.id);
   const anim = animOnce("pend-" + st.gameId);
   const accs = st.results.map(r => r.acc[me.id]).filter(a => a != null);
   const wins = st.results.filter(r => r.closest.includes(me.id)).length;
-  return h("div", { class: "stack " + anim },
-    h("div", { class: "pad stack" }, h("p", { class: "lead" }, "eindstand"), h("span", { class: "big-num num" }, `#${pos + 1}`),
-      h("p", { class: "lead num" }, `${(rk[pos]?.total || 0).toLocaleString("nl-NL")} punten`),
-      accs.length ? h("p", { class: "hint" }, `Gemiddeld ${pct(accs.reduce((a, b) => a + b, 0) / accs.length)} raak · ${wins}× dichtstbij`) : null),
-    st.results.length ? h("div", { class: "pad" }, podium(st, anim)) : null,
-    st.results.length ? h("div", { class: "pad" }, awards(st, computeStats(st))) : null);
+  return h("div", { class: "stack-l " + anim },
+    h("header", { class: "greet" }, h("h1", { class: "title" }, "Je eindigt als ", h("span", { class: "accent num" }, `#${pos + 1}`), "."),
+      h("p", { class: "sub num" }, `${(rk[pos]?.total || 0).toLocaleString("nl-NL")} punten` + (accs.length ? ` · gemiddeld ${pct(accs.reduce((a, b) => a + b, 0) / accs.length)} raak · ${wins}× dichtstbij` : ""))),
+    st.results.length ? h("div", { class: "panel" }, leaderboard(st, me.id)) : null,
+    st.results.length ? awards(st, computeStats(st)) : null);
 }
 
 /* ---------- boot ---------- */
