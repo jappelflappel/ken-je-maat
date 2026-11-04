@@ -1,0 +1,1108 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0C2620">
+<title>Ken Je Maat</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23F6C343'/%3E%3Cpath d='M6 4v10M11 4v6M16 4v10M21 4v6M26 4v10' stroke='%232A2208' stroke-width='2'/%3E%3Ctext x='16' y='28' font-family='Arial Black,sans-serif' font-size='12' text-anchor='middle' fill='%232A2208'%3EKJM%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@75..150,500..900&family=Figtree:wght@400;500;700;800&family=DM+Mono:wght@500&display=swap">
+<style>
+/* Layout: one stage. Host = wide TV screen with a measuring-tape header; player = a single phone column. Single committed dark "café green + tape yellow" look. */
+:root{
+  --bg:#0C2620; --surface:#133429; --surface-2:#1B4335; --line:#2C5A49;
+  --fg:#F4EEDC; --muted:#A8BFB3; --tape:#F6C343; --tape-ink:#2A2208;
+  --coral:#FF6A4D; --sky:#5CC6F2; --mint:#62DFA3;
+  --f-display:"Anybody","Arial Black",Impact,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --r:14px;
+  color-scheme:dark;
+}
+html,body{min-height:100%}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+*{box-sizing:border-box}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+#app{max-width:1180px;margin:0 auto;padding-block:16px 48px}
+#app.phone{max-width:520px}
+
+/* tape */
+.tape{position:relative;background-color:var(--tape);color:var(--tape-ink);
+  background-image:repeating-linear-gradient(90deg,rgba(42,34,8,.85) 0 2px,transparent 2px 10px),
+                   repeating-linear-gradient(90deg,rgba(42,34,8,.9) 0 2px,transparent 2px 50px);
+  background-size:100% 26%,100% 48%;background-repeat:no-repeat;background-position:0 0,0 0}
+.brand{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  border-radius:10px;padding:22px 16px 10px;margin-bottom:20px}
+.logo{font-family:var(--f-display);font-weight:900;font-stretch:135%;font-size:clamp(22px,3.4vw,34px);line-height:1;letter-spacing:-.01em;text-transform:uppercase}
+.logo small{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;font-weight:500;margin-top:4px;text-transform:uppercase;opacity:.8;font-stretch:100%}
+.brand-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-family:var(--f-mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--tape-ink);color:var(--tape);white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:var(--mint)}
+.linkbtn{background:none;border:0;padding:4px 6px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:var(--f-mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:inherit}
+
+/* type */
+h1,h2,h3{text-wrap:balance;margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.display{font-family:var(--f-display);font-weight:900;font-stretch:120%;line-height:1.02;letter-spacing:-.015em}
+.q-text{font-family:var(--f-display);font-weight:800;font-stretch:105%;font-size:clamp(26px,4.4vw,56px);line-height:1.08;text-wrap:balance;margin:0}
+.phone .q-text{font-size:clamp(22px,6.4vw,30px)}
+.muted{color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+.num{font-variant-numeric:tabular-nums}
+p{margin:0}
+
+/* surfaces */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:20px}
+@media (max-width:820px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.section-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.section-h h2{font-family:var(--f-display);font-weight:800;font-stretch:115%;font-size:22px}
+
+/* buttons */
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer;background:var(--surface-2);color:var(--fg);
+  box-shadow:0 4px 0 rgba(0,0,0,.4);transition:transform .08s ease,box-shadow .08s ease;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-go{background:var(--tape);color:var(--tape-ink)}
+.btn-hot{background:var(--coral);color:#2a0d06}
+.btn-ghost{background:transparent;box-shadow:none;border:1px solid var(--line)}
+.btn-big{font-family:var(--f-display);font-stretch:120%;font-weight:900;font-size:clamp(18px,2.2vw,24px);padding:16px 26px;text-transform:uppercase;letter-spacing:.01em}
+.btn-sm{padding:7px 12px;font-size:14px;border-radius:9px;box-shadow:0 3px 0 rgba(0,0,0,.4)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center;margin-top:20px}
+.controls .spacer{flex:1}
+
+/* inputs */
+.field{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0;width:100%}
+.field:focus{border-color:var(--sky)}
+select.field{padding-right:28px}
+.big-input{font-family:var(--f-display);font-weight:900;font-stretch:110%;font-size:40px;text-align:center;background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:12px;width:100%;font-variant-numeric:tabular-nums}
+.big-input:focus{border-color:var(--tape);outline:none}
+.num-form{display:flex;flex-direction:column;gap:10px}
+.lbl{font-weight:700}
+.form-err{color:var(--coral);min-height:1.2em;font-size:14px}
+
+/* players */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 6px 6px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);font-weight:700;max-width:100%}
+.chip .sw{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
+.chip .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip .on{font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--mint)}
+.chip .x{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:0 6px}
+.chip.nox{padding-right:12px}
+
+/* questions editor */
+.qlist{display:flex;flex-direction:column;gap:8px}
+.qrow{display:grid;grid-template-columns:28px minmax(110px,150px) minmax(0,1fr) 34px;gap:8px;align-items:center}
+.qrow .n{font-family:var(--f-mono);color:var(--muted);text-align:right}
+.qrow .x{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:20px}
+@media (max-width:560px){.qrow{grid-template-columns:22px minmax(0,1fr) 30px}.qrow .field.q{grid-column:2 / 3}.qrow .x{grid-row:1 / 3;grid-column:3}}
+.counts{display:flex;flex-wrap:wrap;gap:6px;font-size:13px}
+.counts span{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+.counts span.warn{border-color:var(--coral);color:var(--coral)}
+
+/* stage */
+.stage{display:flex;flex-direction:column;gap:22px}
+.q-head{display:flex;flex-direction:column;gap:12px}
+.about{display:inline-flex;align-items:center;gap:10px;font-weight:800;font-size:clamp(16px,2vw,22px)}
+.about .sw{width:18px;height:18px;border-radius:5px;background:var(--c);transform:rotate(8deg)}
+.about b{color:var(--c)}
+.status-line{font-size:clamp(17px,2vw,22px);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dots i{display:inline-block;width:8px;height:8px;margin:0 2px;border-radius:50%;background:var(--tape);animation:bob 1s infinite ease-in-out}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes bob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(-5px);opacity:1}}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.tile{position:relative;border-radius:14px;padding:16px 14px;background:var(--surface);border:2px dashed var(--line);min-height:86px;display:flex;flex-direction:column;justify-content:space-between;gap:6px;cursor:pointer;text-align:left}
+.tile .nm{font-weight:800;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile .st{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile.in{background:var(--c);border:2px solid var(--c);color:#14110a;animation:pop .35s ease}
+.tile.in .st{color:rgba(20,17,10,.75)}
+@keyframes pop{0%{transform:scale(.92)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+
+.timer{font-family:var(--f-display);font-weight:900;font-stretch:120%;font-size:clamp(40px,6vw,72px);line-height:1;color:var(--tape);font-variant-numeric:tabular-nums;min-width:2ch;text-align:right}
+.timer.low{color:var(--coral)}
+.counter{font-family:var(--f-mono);font-size:14px;color:var(--muted)}
+
+.manual{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--surface-2);border-radius:12px;padding:12px}
+.manual .field{width:160px}
+
+/* reveal */
+.actual{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.actual .big{font-family:var(--f-display);font-weight:900;font-stretch:130%;font-size:clamp(64px,11vw,140px);line-height:.9;color:var(--tape);font-variant-numeric:tabular-nums}
+.actual .who{font-size:clamp(17px,2vw,22px);font-weight:700;padding-bottom:10px}
+.nl-wrap{overflow-x:auto;padding-bottom:4px}
+.nl{position:relative;min-width:520px;margin:64px 8px 0}
+.nl .rule{height:30px;border-radius:6px}
+.nl .tick{position:absolute;top:34px;transform:translateX(-50%);font-family:var(--f-mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.nl .g{position:absolute;top:6px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
+.nl .g .d{width:18px;height:18px;border-radius:50%;background:var(--c);border:3px solid var(--bg);box-shadow:0 0 0 2px var(--c)}
+.nl .g .stem{width:2px;background:var(--c);opacity:.7}
+.nl .g .lab{font-size:13px;font-weight:800;white-space:nowrap;background:var(--surface);border:1px solid var(--c);border-radius:6px;padding:1px 7px;max-width:140px;overflow:hidden;text-overflow:ellipsis}
+.nl .pin{position:absolute;top:-58px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:2}
+.nl .pin .bub{background:var(--fg);color:var(--bg);font-family:var(--f-display);font-weight:900;font-stretch:115%;padding:3px 10px;border-radius:8px;font-size:18px;white-space:nowrap}
+.nl .pin .needle{width:4px;height:56px;background:var(--fg);border-radius:2px}
+.anim .nl .g{animation:dropin .5s cubic-bezier(.2,.9,.3,1.3) both;animation-delay:calc(var(--i) * 90ms)}
+.anim .nl .pin{animation:pinin .7s cubic-bezier(.2,.9,.3,1.2) both;animation-delay:calc(var(--n) * 90ms + 350ms)}
+@keyframes dropin{from{transform:translate(-50%,-24px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+@keyframes pinin{from{transform:translate(-50%,-40px) scaleY(.4);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+
+.rank{display:flex;flex-direction:column;gap:8px}
+.rk{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.rk .pos{font-family:var(--f-display);font-weight:900;font-stretch:120%;font-size:20px;color:var(--muted)}
+.rk .nm{font-weight:800;display:flex;gap:8px;align-items:center;min-width:0}
+.rk .nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rk .nm .sw{width:12px;height:12px;border-radius:50%;background:var(--c);flex:none}
+.rk .det{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+.rk .pts{font-family:var(--f-display);font-weight:900;font-stretch:115%;font-size:22px;font-variant-numeric:tabular-nums;color:var(--tape);min-width:4.2ch;text-align:right}
+.rk.best{border-color:var(--tape);background:linear-gradient(90deg,rgba(246,195,67,.16),var(--surface) 60%)}
+.badge{font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--tape);color:var(--tape-ink);border-radius:4px;padding:1px 6px;flex:none}
+.badge.hot{background:var(--coral);color:#2a0d06}
+.anim .rk{animation:slidein .45s ease both;animation-delay:calc(var(--i) * 70ms + 200ms)}
+@keyframes slidein{from{transform:translateX(-16px);opacity:0}to{transform:none;opacity:1}}
+
+/* leaderboard */
+.lb{display:flex;flex-direction:column;gap:10px}
+.lb-row{display:grid;grid-template-columns:34px minmax(90px,180px) minmax(0,1fr) auto;gap:12px;align-items:center}
+.lb-row .pos{font-family:var(--f-display);font-weight:900;font-stretch:120%;font-size:22px;color:var(--muted);text-align:right}
+.lb-row .nm{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-row .bar{height:34px;border-radius:8px;background:var(--c);width:calc(var(--w) * 1%);min-width:6px;transform-origin:left center}
+.lb-row .tot{font-family:var(--f-display);font-weight:900;font-stretch:115%;font-size:22px;font-variant-numeric:tabular-nums;display:flex;gap:8px;align-items:baseline;justify-content:flex-end;min-width:7ch}
+.lb-row .tot small{font-family:var(--f-mono);font-size:12px;color:var(--mint);font-weight:500}
+.lb-row .mv{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.anim .lb-row .bar{animation:grow .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i) * 80ms)}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (max-width:560px){.lb-row{grid-template-columns:26px minmax(0,1fr) auto}.lb-row .barcell{grid-column:1 / -1}}
+
+/* end */
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end;max-width:720px;margin:0 auto;width:100%}
+.pod{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-width:0}
+.pod .nm{font-weight:800;font-size:clamp(15px,2vw,20px);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod .blk{width:100%;border-radius:12px 12px 4px 4px;background:var(--c);color:#14110a;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;padding-top:12px;font-family:var(--f-display);font-weight:900;font-stretch:125%}
+.pod .blk .p{font-size:clamp(28px,5vw,52px);line-height:1}
+.pod .blk .s{font-size:14px;font-family:var(--f-mono);font-weight:500;font-stretch:100%}
+.pod.p1 .blk{height:200px}.pod.p2 .blk{height:150px}.pod.p3 .blk{height:110px}
+.anim .pod .blk{animation:rise .8s cubic-bezier(.2,.9,.3,1.1) both;transform-origin:bottom}
+.anim .pod.p1 .blk{animation-delay:.9s}.anim .pod.p2 .blk{animation-delay:.5s}.anim .pod.p3 .blk{animation-delay:.1s}
+@keyframes rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.awards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.award{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.award .t{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tape)}
+.award .w{font-family:var(--f-display);font-weight:900;font-stretch:115%;font-size:24px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.award .d{color:var(--muted);font-size:14px}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chart-wrap{overflow-x:auto}
+.chart-wrap svg{display:block;min-width:520px;width:100%;height:auto}
+
+/* misc */
+.notice{border-left:4px solid var(--sky);background:var(--surface);padding:12px 14px;border-radius:8px;font-size:15px}
+.notice.warn{border-color:var(--coral)}
+.center{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
+.splash{min-height:60vh;justify-content:center}
+.role-pick{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;width:100%;max-width:720px}
+.role-pick button{text-align:left;align-items:flex-start;flex-direction:column;padding:22px;gap:6px}
+.role-pick b{font-family:var(--f-display);font-stretch:120%;font-weight:900;font-size:22px}
+.role-pick span{font-weight:500;font-size:15px;opacity:.85}
+.me-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:700}
+.me-bar .chip{background:transparent}
+.big-score{font-family:var(--f-display);font-weight:900;font-stretch:130%;font-size:64px;line-height:1;color:var(--tape);font-variant-numeric:tabular-nums}
+.ok{color:var(--mint);font-weight:800}
+.confirm{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--surface-2);padding:6px 10px;border-radius:10px}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;counter-reset:s}
+.howto div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:15px}
+.howto b{display:block;font-family:var(--f-display);font-stretch:115%;font-size:17px;margin-bottom:4px}
+.join-card{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
+.qr{background:#fff;border-radius:12px;padding:8px;width:150px;height:150px}
+.qr svg{display:block;width:100%;height:100%}
+.code{font-family:var(--f-display);font-weight:900;font-stretch:125%;font-size:clamp(28px,3.2vw,44px);letter-spacing:.04em;line-height:1;color:var(--tape);overflow-wrap:anywhere}
+.url{font-family:var(--f-mono);font-size:13px;word-break:break-all;color:var(--muted)}
+@media (max-width:480px){.join-card{grid-template-columns:minmax(0,1fr)}.qr{margin:0 auto}}
+.code-input{text-transform:uppercase;letter-spacing:.12em}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(() => {
+"use strict";
+
+/* ---------- data ---------- */
+const BANK = [
+  "Hoe vaak ben je in je leven dronken naar huis gefietst?",
+  "Hoeveel landen heb je in totaal bezocht?",
+  "Hoeveel uur per dag zit je gemiddeld op je telefoon?",
+  "Hoeveel ongelezen mails heb je nu?",
+  "Hoeveel foto's staan er op je telefoon?",
+  "Hoe vaak is je fiets in je leven gestolen of kwijtgeraakt?",
+  "Hoeveel kopjes koffie drink je per week?",
+  "Hoeveel euro geef je per maand uit aan bezorgmaaltijden en uit eten?",
+  "Hoe vaak snooze je op een gemiddelde ochtend?",
+  "Hoeveel festivals heb je in je leven bezocht?",
+  "Hoeveel keer ben je in je leven verhuisd?",
+  "Hoeveel boeken heb je het afgelopen jaar uitgelezen?",
+  "Hoeveel apps staan er op je telefoon?",
+  "Hoeveel seconden kun je je adem inhouden?",
+  "Hoeveel push-ups kun je achter elkaar doen?",
+  "Hoeveel keer had je dit jaar een kater?",
+  "Hoeveel contacten staan er in je telefoon?",
+  "Hoe vaak ben je in je leven in een sloot of gracht beland?",
+  "Hoeveel uur slaap je gemiddeld per nacht?",
+  "Op een schaal van 0 tot 100: hoe goed kun je zingen?",
+  "Hoeveel procent van de discussies denk je te winnen?",
+  "Hoeveel mensen uit deze groep zou je om 3 uur 's nachts bellen voor hulp?",
+  "Hoe vaak heb je in je leven een boete gekregen?",
+  "Hoeveel keer ben je dit jaar te laat gekomen op werk of college?",
+  "Hoeveel paar schoenen heb je?",
+  "Hoeveel kilometer fiets je per week?",
+  "Hoeveel tabbladen staan er nu open in je browser?",
+  "Hoeveel euro heb je ooit in één avond uitgegeven in de kroeg?"
+];
+const COLORS = ["#F6C343","#FF6A4D","#5CC6F2","#62DFA3","#C99BFF","#FF9ECF","#FFA94D","#9AE6E0","#E9E37A","#B3A1FF","#7FD1FF","#FFB3A7"];
+const PHASE_LABEL = {answer:"Eigen inschatting",guess:"Iedereen raadt",reveal:"Onthulling",scores:"Tussenstand",end:"Eindstand"};
+
+/* ---------- helpers ---------- */
+const $ = (s, el = document) => el.querySelector(s);
+const rid = () => Math.random().toString(36).slice(2, 10);
+const ls = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+const clone = o => JSON.parse(JSON.stringify(o));
+const cleanName = s => String(s ?? "").replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁠-⁯]/g, "").replace(/\s+/g, " ").trim().slice(0, 24);
+const safeColor = c => /^#[0-9a-f]{6}$/i.test(c || "") ? c : "#A8BFB3";
+function num(x) {
+  if (typeof x === "number") return Number.isFinite(x) && x >= 0 && x < 1e12 ? Math.round(x * 100) / 100 : null;
+  if (typeof x !== "string") return null;
+  let s = x.trim().replace(/[\s_']/g, "");
+  if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s = s.replace(/\./g, "");
+  s = s.replace(",", ".");
+  if (!/^\d*\.?\d+$/.test(s)) return null;
+  return num(parseFloat(s));
+}
+const fmt = v => v == null ? "–" : Number(v).toLocaleString("nl-NL", { maximumFractionDigits: 2 });
+const pct = a => Math.round(a * 100) + "%";
+
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  if (props) for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "value") el.value = v;
+    else if (k === "checked") el.checked = !!v;
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of kids.flat(Infinity)) {
+    if (c == null || c === false) continue;
+    el.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  }
+  return el;
+}
+const SVGNS = "http://www.w3.org/2000/svg";
+function s(tag, attrs, ...kids) {
+  const el = document.createElementNS(SVGNS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) el.setAttribute(k, v);
+  for (const c of kids.flat()) if (c != null) el.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  return el;
+}
+
+/* ---------- scoring ---------- */
+// Accuracy = smaller/greater of guess and answer (+1 smoothing so 0 works). 2x off = ~50%, 10x off = ~10%.
+function accuracy(g, a) { g = Math.max(0, g); a = Math.max(0, a); return (Math.min(g, a) + 1) / (Math.max(g, a) + 1); }
+function scoreRound(actual, guesses, settings) {
+  const acc = {}, points = {};
+  let best = -1;
+  for (const [id, g] of Object.entries(guesses)) { acc[id] = accuracy(g, actual); best = Math.max(best, acc[id]); }
+  const closest = Object.keys(acc).filter(id => acc[id] >= best - 1e-9);
+  for (const id of Object.keys(acc)) {
+    let p = Math.round(1000 * acc[id]);
+    if (settings.bonus && closest.includes(id)) p += 250;
+    points[id] = p;
+  }
+  return { acc, points, closest };
+}
+function totals(st, upto = st.results.length) {
+  const t = {}; for (const p of st.players) t[p.id] = 0;
+  st.results.slice(0, upto).forEach(r => { for (const [id, v] of Object.entries(r.points)) t[id] = (t[id] || 0) + v; });
+  return t;
+}
+function ranking(st, upto) {
+  const t = totals(st, upto);
+  return st.players.map(p => ({ p, total: t[p.id] || 0 })).sort((a, b) => b.total - a.total || a.p.name.localeCompare(b.p.name));
+}
+
+/* ---------- state ---------- */
+// Transport: a public MQTT broker over WebSocket. The host's browser is the authority and
+// publishes the game state (retained) to kenjemaat/v1/<code>/state; each phone publishes its
+// presence (name + current answer, retained) to kenjemaat/v1/<code>/in/<pid>.
+const BROKER = "wss://broker.hivemq.com:8884/mqtt";
+const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const topic = (code, sub) => `kenjemaat/v1/${code}/${sub}`;
+const newCode = () => Array.from({ length: 6 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join("");
+const cleanCode = c => String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+const S = {
+  role: null,        // "landing" | "host" | "player"
+  mq: null, conn: false, code: null, peers: new Map(), pres: {}, everConnected: false,
+  state: null, online: new Set(),
+  deviceId: null, myPid: null, myName: ls.get("kjm-name", ""), myAns: null,
+  ui: { confirm: null, manual: null, loading: true, loadNote: null, saveErr: null, expired: null },
+  lastKey: "", animKey: "", writing: false, dirty: false, writeT: null, autoT: null
+};
+
+function newState(prev) {
+  const qs = prev?.questions?.length ? prev.questions.map(q => ({ ...q, id: rid() }))
+    : [BANK[0], ...shuffle(BANK.slice(1)).slice(0, 3)].map(text => ({ id: rid(), text, subject: null }));
+  return {
+    v: 1, gameId: rid(), phase: "lobby",
+    players: prev?.players ?? [], questions: qs, qi: 0,
+    pending: { subject: null, guesses: {} }, results: [],
+    settings: prev?.settings ?? { timer: 45, bonus: true },
+    endsAt: null, removed: prev?.removed ?? [], updatedAt: Date.now()
+  };
+}
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const player = (st, id) => st.players.find(p => p.id === id);
+const pname = (st, id) => player(st, id)?.name || "Iemand";
+const pcolor = (st, id) => safeColor(player(st, id)?.color);
+const curQ = st => st.questions[st.qi];
+const curKey = st => (st.phase === "answer" || st.phase === "guess") && curQ(st) ? `${st.gameId}|${curQ(st).id}|${st.phase}` : null;
+const guessers = st => st.players.filter(p => p.id !== curQ(st)?.subject);
+function nextColor(st) {
+  const used = new Set(st.players.map(p => p.color));
+  return COLORS.find(c => !used.has(c)) || COLORS[st.players.length % COLORS.length];
+}
+function uniqueName(st, name) {
+  let n = name, i = 2;
+  while (st.players.some(p => p.name.toLowerCase() === n.toLowerCase())) n = `${name.slice(0, 21)} ${i++}`;
+  return n;
+}
+
+/* ---------- host: persistence ---------- */
+function mutate(fn) { fn(S.state); S.state.updatedAt = Date.now(); save(); render(); }
+function save() {
+  ls.set("kjm-host-" + S.code, S.state);
+  ls.set("kjm-last-host", S.code);
+  clearTimeout(S.writeT); S.writeT = setTimeout(flush, 150);
+}
+function flush() {
+  if (!S.mq || !S.state) return;
+  S.mq.publish(topic(S.code, "state"), JSON.stringify(S.state), { qos: 1, retain: true }, err => {
+    const msg = err ? "Versturen naar de telefoons lukt even niet. Het spel probeert het opnieuw zodra er verbinding is." : null;
+    if (msg !== S.ui.saveErr) { S.ui.saveErr = msg; render(); }
+  });
+}
+
+/* ---------- host: game flow ---------- */
+function playable(st) { return st.questions.filter(q => q.text.trim() && player(st, q.subject)); }
+function startGame() {
+  mutate(st => {
+    st.questions = playable(st).map(q => ({ ...q, text: q.text.trim() }));
+    st.results = []; st.qi = 0; st.gameId = rid();
+    enterQuestion(st);
+  });
+}
+function enterQuestion(st) {
+  while (st.qi < st.questions.length && !player(st, st.questions[st.qi].subject)) st.qi++;
+  if (st.qi >= st.questions.length) { st.phase = "end"; st.endsAt = null; return; }
+  st.phase = "answer"; st.pending = { subject: null, guesses: {} }; st.endsAt = null;
+}
+function goGuess() {
+  clearTimeout(S.autoT);
+  mutate(st => {
+    if (st.phase !== "answer" || st.pending.subject == null) return;
+    st.phase = "guess"; st.endsAt = st.settings.timer ? Date.now() + st.settings.timer * 1000 : null;
+  });
+}
+function reveal() {
+  clearTimeout(S.autoT);
+  mutate(st => {
+    if (st.phase !== "guess") return;
+    const q = curQ(st), actual = st.pending.subject;
+    const valid = {}; for (const [id, v] of Object.entries(st.pending.guesses)) if (player(st, id) && id !== q.subject) valid[id] = v;
+    const r = scoreRound(actual, valid, st.settings);
+    st.results.push({ qid: q.id, text: q.text, subject: q.subject, actual, guesses: valid, points: r.points, acc: r.acc, closest: r.closest });
+    st.phase = "reveal"; st.endsAt = null;
+  });
+}
+const toScores = () => mutate(st => { if (st.phase === "reveal") st.phase = "scores"; });
+const nextQuestion = () => mutate(st => { st.qi++; enterQuestion(st); });
+const skipQuestion = () => { clearTimeout(S.autoT); mutate(st => { st.qi++; enterQuestion(st); }); };
+const toLobby = () => { clearTimeout(S.autoT); S.ui.confirm = null; mutate(st => { st.phase = "lobby"; st.endsAt = null; st.pending = { subject: null, guesses: {} }; }); };
+const newGame = () => { S.ui.confirm = null; const prev = S.state; S.state = newState(prev); save(); render(); };
+
+function recordValue(st, pl, v) {
+  const q = curQ(st); if (!q) return false;
+  if (st.phase === "answer" && pl.id === q.subject) { if (st.pending.subject === v) return false; st.pending.subject = v; return true; }
+  if (st.phase === "guess" && pl.id !== q.subject) { if (st.pending.guesses[pl.id] === v) return false; st.pending.guesses[pl.id] = v; return true; }
+  return false;
+}
+function checkAuto() {
+  const st = S.state; if (!st || S.role !== "host") return;
+  clearTimeout(S.autoT);
+  if (st.phase === "answer" && st.pending.subject != null) S.autoT = setTimeout(goGuess, 1400);
+  else if (st.phase === "guess") {
+    const g = guessers(st);
+    if (g.length && g.every(p => st.pending.guesses[p.id] != null)) S.autoT = setTimeout(reveal, 1600);
+  }
+}
+function manualSubmit(id, v) {
+  S.ui.manual = null;
+  mutate(st => { const pl = player(st, id); if (pl) recordValue(st, pl, v); });
+  checkAuto();
+}
+
+function hostPeers() {
+  const st = S.state; if (!st) return;
+  const online = new Set(); let changed = false;
+  const key = curKey(st);
+  for (const [pid, p] of S.peers) {
+    const pr = p.presence || {};
+    if (pr.role !== "player" || pr.pid !== pid) continue;
+    const name = cleanName(pr.name);
+    const fresh = Date.now() - p.seen < 25000;
+    if (!name || st.removed.includes(pid)) continue;
+    let pl = st.players.find(x => x.pid === pid);
+    if (!pl) {
+      pl = st.players.find(x => !x.pid && x.name.toLowerCase() === name.toLowerCase());
+      if (pl) { pl.pid = pid; changed = true; }
+      else if (st.players.length < 40) { pl = { id: rid(), name: uniqueName(st, name), color: nextColor(st), pid }; st.players.push(pl); changed = true; }
+      else continue;
+    }
+    if (fresh) online.add(pl.id);
+    if (pl.name !== name && !st.players.some(x => x !== pl && x.name.toLowerCase() === name.toLowerCase())) { pl.name = name; changed = true; }
+    const a = pr.ans;
+    if (key && a && typeof a === "object" && a.k === key) { const v = num(a.v); if (v != null && recordValue(st, pl, v)) changed = true; }
+  }
+  S.online = online;
+  if (changed) { st.updatedAt = Date.now(); save(); checkAuto(); }
+  render();
+}
+
+/* ---------- player ---------- */
+function pPresence(patch) {
+  Object.assign(S.pres, patch, { t: Date.now() });
+  if (S.mq && S.code && S.pres.name) S.mq.publish(topic(S.code, "in/" + S.myPid), JSON.stringify(S.pres), { qos: 1, retain: true });
+}
+function joinAs(name) {
+  S.myName = cleanName(name); if (!S.myName) return;
+  ls.set("kjm-name", S.myName);
+  pPresence({ role: "player", pid: S.myPid, name: S.myName, ans: null });
+  render();
+}
+function playerSubmit(v) {
+  const key = curKey(S.state); if (!key) return;
+  S.myAns = { k: key, v };
+  pPresence({ ans: { k: key, v } });
+  render();
+}
+const meIn = st => st?.players.find(p => p.pid === S.myPid);
+
+/* ---------- render ---------- */
+function captureInputs() {
+  const a = document.activeElement, keep = [];
+  document.querySelectorAll("[data-keep][id]").forEach(el => keep.push([el.id, el.value]));
+  return { keep, focus: a?.id || null, sel: a && "selectionStart" in a ? [a.selectionStart, a.selectionEnd] : null };
+}
+function restoreInputs(c) {
+  for (const [id, v] of c.keep) { const el = document.getElementById(id); if (el && el.hasAttribute("data-keep")) el.value = v; }
+  if (c.focus) { const el = document.getElementById(c.focus); if (el) { el.focus({ preventScroll: true }); if (c.sel && el.setSelectionRange) try { el.setSelectionRange(c.sel[0], c.sel[1]); } catch {} } }
+}
+function render() {
+  const key = JSON.stringify([S.role, S.code, S.state, [...S.online].sort(), S.ui, S.myAns, S.myName, !!S.joined, S.conn, S.everConnected]);
+  if (key === S.lastKey) return;
+  S.lastKey = key;
+  const app = $("#app");
+  const c = captureInputs();
+  app.className = S.role === "player" ? "phone" : "";
+  app.replaceChildren(view());
+  restoreInputs(c);
+}
+// Play an entry animation once per phase, not on every re-render.
+function animOnce(tag) { if (S.animKey === tag) return ""; S.animKey = tag; return "anim"; }
+
+function brand(extra) {
+  return h("header", { class: "brand tape" },
+    h("div", { class: "logo" }, "Ken Je Maat", h("small", null, "Schat wat je vriend schat")),
+    h("div", { class: "brand-meta" }, extra));
+}
+
+function view() {
+  if (S.ui.loading) return h("div", { class: "center splash" }, brand(), h("p", { class: "status-line" }, "Verbinden", h("span", { class: "dots" }, h("i"), h("i"), h("i"))), S.ui.loadNote ? h("p", { class: "notice warn" }, S.ui.loadNote) : null);
+  if (S.role === "player") return viewPlayer();
+  if (S.role === "host") return viewHost();
+  return viewLanding();
+}
+
+function viewLanding() {
+  const last = ls.get("kjm-last-host", null);
+  const lastSt = last ? ls.get("kjm-host-" + last, null) : null;
+  const codeIn = h("input", { id: "land-code", "data-keep": true, class: "big-input code-input", style: "font-size:30px", maxlength: 6, autocomplete: "off", autocapitalize: "characters", placeholder: "CODE", "aria-label": "Spelcode", enterkeyhint: "go" });
+  const err = h("p", { class: "form-err", "aria-live": "polite" });
+  return h("div", { class: "stack" }, brand(),
+    h("div", { class: "role-pick", style: "max-width:none" },
+      h("form", { class: "card stack", onsubmit: e => { e.preventDefault(); const c = cleanCode(codeIn.value); if (c.length !== 6) { err.textContent = "Een spelcode heeft 6 tekens."; return; } location.hash = c; } },
+        h("h2", { class: "display", style: "font-size:26px" }, "Doe mee"),
+        h("p", { class: "muted" }, "Vul de code in die op het grote scherm staat, of scan de QR-code."),
+        codeIn, h("button", { class: "btn btn-go btn-big", type: "submit" }, "Doe mee"), err),
+      h("div", { class: "card stack" },
+        h("h2", { class: "display", style: "font-size:26px" }, "Host een spel"),
+        h("p", { class: "muted" }, "Open dit op een laptop of tv. Hier stel je de vragen in, start je rondes en zie je de uitslag."),
+        h("button", { class: "btn btn-big", onclick: () => startHost(newCode()) }, "Nieuw spel"),
+        lastSt?.players ? h("button", { class: "btn btn-ghost", onclick: () => startHost(last) }, `Verder met spel ${last} (${lastSt.players.length} spelers)`) : null)),
+    howTo());
+}
+function howTo() {
+  return h("section", { class: "stack", "aria-label": "Zo werkt het" },
+    h("p", { class: "eyebrow" }, "Zo werkt het"),
+    h("div", { class: "howto" },
+      h("div", null, h("b", null, "1. Iemand schat"), "Eén speler krijgt een vraag over zichzelf en vult in het geheim een getal in."),
+      h("div", null, h("b", null, "2. De rest raadt"), "Iedereen raadt welk getal die speler heeft ingevuld. Niet het echte antwoord: de eigen inschatting."),
+      h("div", null, h("b", null, "3. Punten voor iedereen"), "Hoe dichterbij, hoe meer punten: tot 1000 per ronde, plus 250 voor wie het dichtst zat.")));
+}
+
+/* ---------- host views ---------- */
+function hostMeta() {
+  const st = S.state;
+  const items = [];
+  items.push(h("span", { class: "pill" }, "Code ", h("b", null, S.code)));
+  items.push(h("span", { class: "pill" }, h("span", { class: "dot", style: S.conn ? "" : "background:var(--coral)" }), S.conn ? `${S.online.size} online` : "Geen verbinding"));
+  if (st && st.phase !== "lobby" && st.phase !== "end") items.push(h("span", { class: "pill num" }, `Vraag ${st.qi + 1}/${st.questions.length}`));
+  if (st && st.phase !== "lobby") {
+    if (S.ui.confirm === "stop") items.push(h("span", { class: "confirm" }, "Naar de lobby?", h("button", { class: "btn btn-sm btn-hot", onclick: toLobby }, "Ja"), h("button", { class: "btn btn-sm", onclick: () => { S.ui.confirm = null; render(); } }, "Nee")));
+    else items.push(h("button", { class: "linkbtn", onclick: () => { S.ui.confirm = "stop"; render(); } }, "Lobby"));
+  }
+  if (!st || st.phase === "lobby") items.push(h("button", { class: "linkbtn", onclick: () => { location.hash = ""; } }, "Sluiten"));
+  return items;
+}
+function viewHost() {
+  const st = S.state;
+  const notes = [];
+  if (S.ui.loadNote) notes.push(h("p", { class: "notice warn" }, S.ui.loadNote));
+  if (S.ui.saveErr) notes.push(h("p", { class: "notice warn" }, S.ui.saveErr));
+  if (!S.conn && S.everConnected) notes.push(h("p", { class: "notice warn" }, "Verbinding met de telefoons is weg. Het spel probeert het opnieuw; je kunt intussen antwoorden op dit scherm invullen."));
+  else if (!S.conn && S.ui.connSlow) notes.push(h("p", { class: "notice warn" }, "Kan de verbindingsserver niet bereiken. Telefoons kunnen pas meedoen als dit lukt; je kunt wel op dit scherm spelen."));
+  const body = !st ? h("p", null, "Laden…")
+    : st.phase === "lobby" ? hostLobby(st)
+    : st.phase === "answer" ? hostAnswer(st)
+    : st.phase === "guess" ? hostGuess(st)
+    : st.phase === "reveal" ? hostReveal(st)
+    : st.phase === "scores" ? hostScores(st)
+    : hostEnd(st);
+  return h("div", null, brand(hostMeta()), ...notes, body);
+}
+
+function hostLobby(st) {
+  const addInput = h("input", { id: "add-name", "data-keep": true, class: "field", placeholder: "Naam", maxlength: 24, autocomplete: "off", "aria-label": "Naam van speler" });
+  const add = e => {
+    e.preventDefault();
+    const n = cleanName(addInput.value); if (!n) return;
+    addInput.value = "";
+    mutate(st => { if (st.players.length < 40) st.players.push({ id: rid(), name: uniqueName(st, n), color: nextColor(st), pid: null }); });
+  };
+  const removePl = id => mutate(st => {
+    const pl = player(st, id); if (!pl) return;
+    if (pl.pid) st.removed.push(pl.pid);
+    st.players = st.players.filter(p => p.id !== id);
+    st.questions.forEach(q => { if (q.subject === id) q.subject = null; });
+  });
+
+  const players = h("section", { class: "card stack" },
+    h("div", { class: "section-h" }, h("h2", null, "Spelers"), h("span", { class: "muted num" }, `${st.players.length}`)),
+    joinCard(),
+    st.players.length
+      ? h("div", { class: "chips" }, st.players.map(p => h("span", { class: "chip", style: `--c:${safeColor(p.color)}` },
+          h("span", { class: "sw" }), h("span", { class: "nm" }, p.name),
+          S.online.has(p.id) ? h("span", { class: "on" }, "online") : null,
+          h("button", { class: "x", title: `${p.name} verwijderen`, "aria-label": `${p.name} verwijderen`, onclick: () => removePl(p.id) }, "×"))))
+      : h("p", { class: "notice" }, "Nog niemand. Je hebt minstens twee spelers nodig."),
+    h("form", { class: "row", onsubmit: add, style: "flex-wrap:nowrap" }, addInput, h("button", { class: "btn btn-sm", type: "submit" }, "Voeg toe")),
+    h("p", { class: "muted", style: "font-size:13px" }, "Iemand zonder telefoon? Voeg die hier toe en vul tijdens het spel diens antwoord in door op de naam te tikken."));
+
+  const opts = id => [h("option", { value: "" }, "Over wie?"), ...st.players.map(p => h("option", { value: p.id, selected: p.id === id }, p.name))];
+  const qlist = h("div", { class: "qlist" }, st.questions.map((q, i) => h("div", { class: "qrow" },
+    h("span", { class: "n num" }, i + 1),
+    h("select", { class: "field", id: `qs-${q.id}`, "aria-label": `Onderwerp van vraag ${i + 1}`, onchange: e => mutate(st => { const x = st.questions.find(y => y.id === q.id); if (x) x.subject = e.target.value || null; }) }, opts(q.subject)),
+    h("input", { class: "field q", id: `qt-${q.id}`, value: q.text, maxlength: 160, placeholder: "Typ een vraag met een getal als antwoord", "aria-label": `Vraag ${i + 1}`,
+      oninput: e => { const x = S.state.questions.find(y => y.id === q.id); if (x) { x.text = e.target.value.slice(0, 160); save(); } },
+      onchange: () => render() }),
+    h("button", { class: "x", "aria-label": `Vraag ${i + 1} verwijderen`, onclick: () => mutate(st => { st.questions = st.questions.filter(y => y.id !== q.id); }) }, "×"))));
+
+  const fromBank = () => mutate(st => {
+    const used = new Set(st.questions.map(q => q.text));
+    const left = BANK.filter(t => !used.has(t));
+    const t = left.length ? left[Math.floor(Math.random() * left.length)] : "";
+    st.questions.push({ id: rid(), text: t, subject: null });
+  });
+  const distribute = () => mutate(st => {
+    if (!st.players.length) return;
+    const order = shuffle(st.players.map(p => p.id));
+    st.questions.forEach((q, i) => { q.subject = order[i % order.length]; });
+  });
+  const fill = () => mutate(st => {
+    const used = new Set(st.questions.map(q => q.text));
+    const left = shuffle(BANK.filter(t => !used.has(t)));
+    const want = Math.max(st.players.length * 2, 4) - st.questions.length;
+    for (let i = 0; i < want && left.length; i++) st.questions.push({ id: rid(), text: left.pop(), subject: null });
+    const order = shuffle(st.players.map(p => p.id));
+    if (order.length) st.questions.forEach((q, i) => { q.subject = order[i % order.length]; });
+  });
+
+  const counts = {}; st.players.forEach(p => counts[p.id] = 0);
+  st.questions.forEach(q => { if (counts[q.subject] != null) counts[q.subject]++; });
+  const okQs = playable(st);
+  const reason = st.players.length < 2 ? "Voeg minstens twee spelers toe." : !okQs.length ? "Geef minstens één vraag een onderwerp." : null;
+
+  const questions = h("section", { class: "card stack" },
+    h("div", { class: "section-h" }, h("h2", null, "Vragen"), h("span", { class: "muted num" }, `${okQs.length} klaar om te spelen`)),
+    h("p", { class: "muted" }, "Elke vraag gaat over één speler. Die vult een eigen inschatting in, de rest raadt dat getal."),
+    qlist,
+    h("div", { class: "row" },
+      h("button", { class: "btn btn-sm", onclick: () => mutate(st => st.questions.push({ id: rid(), text: "", subject: null })) }, "+ Eigen vraag"),
+      h("button", { class: "btn btn-sm", onclick: fromBank }, "+ Uit de vragenbank"),
+      h("button", { class: "btn btn-sm", onclick: distribute, disabled: !st.players.length }, "Verdeel eerlijk"),
+      h("button", { class: "btn btn-sm btn-ghost", onclick: fill, disabled: !st.players.length, title: "Twee vragen per speler, eerlijk verdeeld" }, "Vul aan tot 2 per speler")),
+    st.players.length ? h("div", { class: "counts" }, st.players.map(p => h("span", { class: counts[p.id] ? "" : "warn" }, `${p.name}: ${counts[p.id]}`))) : null);
+
+  const settings = h("section", { class: "card row", style: "justify-content:space-between;gap:16px" },
+    h("label", { class: "row", for: "set-timer" }, h("span", { class: "lbl" }, "Tijd om te raden"),
+      h("select", { id: "set-timer", class: "field", style: "width:auto", onchange: e => mutate(st => st.settings.timer = +e.target.value) },
+        [0, 20, 30, 45, 60, 90].map(t => h("option", { value: t, selected: st.settings.timer === t }, t ? `${t} seconden` : "Geen timer")))),
+    h("label", { class: "row", for: "set-bonus" },
+      h("input", { type: "checkbox", id: "set-bonus", checked: st.settings.bonus, onchange: e => mutate(st => st.settings.bonus = e.target.checked) }),
+      h("span", null, "+250 bonus voor wie het dichtst zat")),
+    h("div", { class: "row" },
+      reason ? h("span", { class: "muted" }, reason) : null,
+      h("button", { class: "btn btn-go btn-big", disabled: !!reason, onclick: startGame }, "Start spel")));
+
+  return h("div", { class: "stack" }, h("div", { class: "grid2" }, players, questions), settings, st.results.length ? null : howTo());
+}
+
+function joinUrl() { return location.origin + location.pathname + "#" + S.code; }
+function joinCard() {
+  const url = joinUrl();
+  const qr = h("div", { class: "qr", role: "img", "aria-label": "QR-code om mee te doen" });
+  try { const q = qrcode(0, "M"); q.addData(url); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 1, scalable: true }); } catch { qr.hidden = true; }
+  const copyBtn = h("button", { class: "btn btn-sm", type: "button", onclick: e => {
+    const b = e.currentTarget;
+    navigator.clipboard?.writeText(url).then(() => { b.textContent = "Gekopieerd"; }, () => { b.textContent = "Kopiëren lukte niet"; });
+  } }, "Kopieer link");
+  return h("div", { class: "join-card" }, qr,
+    h("div", { class: "stack", style: "gap:8px;min-width:0" },
+      h("span", { class: "eyebrow" }, "Doe mee met je telefoon"),
+      h("span", { class: "code" }, S.code),
+      h("span", { class: "url" }, url),
+      h("div", { class: "row" }, copyBtn)));
+}
+function qHead(st, sub) {
+  const q = curQ(st);
+  return h("div", { class: "q-head" },
+    h("p", { class: "eyebrow" }, `Vraag ${st.qi + 1} van ${st.questions.length} · ${PHASE_LABEL[st.phase]}`),
+    h("p", { class: "about", style: `--c:${pcolor(st, q.subject)}` }, h("span", { class: "sw" }), "Over ", h("b", null, pname(st, q.subject))),
+    h("h1", { class: "q-text" }, q.text),
+    sub || null);
+}
+function manualBox(st, id, secret) {
+  const inp = h("input", { id: `man-${id}`, "data-keep": true, class: "field", type: secret ? "password" : "text", inputmode: "decimal", autocomplete: "off", placeholder: "Getal", "aria-label": `Antwoord van ${pname(st, id)}` });
+  const err = h("span", { class: "form-err" });
+  setTimeout(() => inp.focus(), 0);
+  return h("form", { class: "manual", onsubmit: e => { e.preventDefault(); const v = num(inp.value); if (v == null) { err.textContent = "Vul een getal in, 0 of hoger."; return; } manualSubmit(id, v); } },
+    h("span", { class: "lbl" }, secret ? `Laat ${pname(st, id)} hier stiekem typen:` : `Antwoord van ${pname(st, id)}:`), inp,
+    h("button", { class: "btn btn-sm btn-go", type: "submit" }, "Opslaan"),
+    h("button", { class: "btn btn-sm btn-ghost", type: "button", onclick: () => { S.ui.manual = null; render(); } }, "Annuleer"), err);
+}
+
+function hostAnswer(st) {
+  const q = curQ(st), in_ = st.pending.subject != null, nm = pname(st, q.subject);
+  return h("div", { class: "stage" },
+    h("div", { class: "card stack", style: "padding:28px" }, qHead(st),
+      h("p", { class: "status-line" }, in_
+        ? [h("span", { class: "ok" }, `${nm} heeft ingevuld.`), " Zo meteen mag de rest raden."]
+        : [`${nm} vult nu in het geheim een eigen inschatting in`, h("span", { class: "dots", "aria-hidden": "true" }, h("i"), h("i"), h("i"))])),
+    S.ui.manual === q.subject ? manualBox(st, q.subject, true) : null,
+    h("div", { class: "controls" },
+      h("button", { class: "btn btn-ghost", onclick: skipQuestion }, "Sla vraag over"),
+      h("span", { class: "spacer" }),
+      !in_ ? h("button", { class: "btn", onclick: () => { S.ui.manual = q.subject; render(); } }, `Invullen namens ${nm}`) : null,
+      h("button", { class: "btn btn-go btn-big", disabled: !in_, onclick: goGuess }, "Start raden")));
+}
+function cdLeft(st) { return st.endsAt ? Math.max(0, Math.ceil((st.endsAt - Date.now()) / 1000)) : null; }
+function hostGuess(st) {
+  const q = curQ(st), g = guessers(st), inCount = g.filter(p => st.pending.guesses[p.id] != null).length;
+  const left = cdLeft(st);
+  return h("div", { class: "stage" },
+    h("div", { class: "card stack", style: "padding:28px" },
+      h("div", { class: "row", style: "justify-content:space-between;align-items:flex-start;flex-wrap:nowrap" },
+        qHead(st, h("p", { class: "status-line" }, `Wat heeft ${pname(st, q.subject)} ingevuld?`)),
+        left != null ? h("div", { class: "timer" + (left <= 5 ? " low" : ""), "data-cd": true, "aria-live": "off" }, left) : null)),
+    h("div", { class: "section-h" }, h("p", { class: "eyebrow" }, "Antwoorden"), h("span", { class: "counter num" }, `${inCount} van ${g.length} binnen`)),
+    h("div", { class: "tiles" }, g.map(p => {
+      const has = st.pending.guesses[p.id] != null;
+      return h("button", { class: "tile" + (has ? " in" : ""), style: `--c:${safeColor(p.color)}`, onclick: () => { S.ui.manual = p.id; render(); }, title: "Tik om het antwoord in te vullen" },
+        h("span", { class: "nm" }, p.name), h("span", { class: "st" }, has ? "Binnen" : S.online.has(p.id) ? "Denkt na…" : "Tik om in te vullen"));
+    })),
+    S.ui.manual && S.ui.manual !== q.subject && player(st, S.ui.manual) ? manualBox(st, S.ui.manual, false) : null,
+    h("div", { class: "controls" },
+      h("button", { class: "btn btn-ghost", onclick: skipQuestion }, "Sla vraag over"),
+      h("span", { class: "spacer" }),
+      h("button", { class: "btn btn-go btn-big", onclick: reveal, disabled: !inCount }, inCount === g.length ? "Onthul" : "Onthul nu")));
+}
+
+function numberLine(st, r) {
+  const entries = Object.entries(r.guesses).map(([id, v]) => ({ id, v, name: pname(st, id), color: pcolor(st, id) }));
+  const vals = [r.actual, ...entries.map(e => e.v)];
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  const useLog = (hi + 1) / (lo + 1) > 25;
+  const f = v => useLog ? Math.log10(v + 1) : v;
+  let a = f(lo), b = f(hi);
+  if (b - a < 1e-9) { a -= useLog ? 0.3 : Math.max(1, Math.abs(a) * 0.2); b += useLog ? 0.3 : Math.max(1, Math.abs(b) * 0.2); }
+  const pad = (b - a) * 0.07; a -= pad; b += pad;
+  if (!useLog) a = Math.max(a, Math.min(0, lo)); else a = Math.max(a, 0);
+  const pos = v => Math.min(98, Math.max(2, ((f(v) - a) / (b - a)) * 100));
+  // ticks
+  const ticks = [];
+  if (useLog) { for (let e = 1; e <= 12; e++) { const t = 10 ** e; if (f(t) >= a && f(t) <= b) ticks.push(t); } if (f(0) >= a) ticks.unshift(0); }
+  else {
+    const span = (b - a), raw = span / 5, mag = 10 ** Math.floor(Math.log10(raw)), step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(x => span / x <= 6) || raw;
+    for (let t = Math.ceil(a / step) * step; t <= b; t += step) ticks.push(Math.round(t * 1e6) / 1e6);
+  }
+  // stack labels so they don't collide
+  const sorted = entries.map(e => ({ ...e, x: pos(e.v) })).sort((p, q) => p.x - q.x);
+  const lastX = [];
+  sorted.forEach(e => { let r_ = lastX.findIndex(x => e.x - x > 13); if (r_ === -1) { r_ = lastX.length < 6 ? lastX.length : lastX.indexOf(Math.min(...lastX)); } lastX[r_] = e.x; e.row = r_; });
+  const rows = Math.max(1, lastX.length);
+  return h("div", { class: "nl-wrap" }, h("div", { class: "nl", style: `height:${70 + rows * 30}px`, role: "img", "aria-label": `Getallenlijn: echte antwoord ${fmt(r.actual)}` },
+    h("div", { class: "rule tape" }),
+    ticks.map(t => h("span", { class: "tick num", style: `left:${pos(t)}%` }, fmt(t))),
+    sorted.map((e, i) => h("div", { class: "g", style: `left:${e.x}%;--c:${e.color};--i:${i}` },
+      h("span", { class: "d" }), h("span", { class: "stem", style: `height:${30 + e.row * 30}px` }), h("span", { class: "lab", title: `${e.name}: ${fmt(e.v)}` }, `${e.name} · ${fmt(e.v)}`))),
+    h("div", { class: "pin", style: `left:${pos(r.actual)}%;--n:${sorted.length}` }, h("span", { class: "bub num" }, fmt(r.actual)), h("span", { class: "needle" }))),
+    useLog ? h("p", { class: "muted", style: "font-size:12px;margin-top:4px" }, "Logaritmische schaal: de antwoorden liggen ver uit elkaar.") : null);
+}
+function offText(g, a) {
+  if (g === a) return "precies goed";
+  const r = (g + 1) / (a + 1);
+  return r > 1 ? `${fmt(Math.round(r * 10) / 10)}× te hoog` : `${fmt(Math.round((1 / r) * 10) / 10)}× te laag`;
+}
+function roundRanking(st, r, highlightId) {
+  const rows = st.players.filter(p => p.id !== r.subject).map(p => ({ p, g: r.guesses[p.id], pts: r.points[p.id] || 0, acc: r.acc[p.id] }))
+    .sort((x, y) => y.pts - x.pts || x.p.name.localeCompare(y.p.name));
+  return h("div", { class: "rank" }, rows.map((x, i) => h("div", { class: "rk" + (r.closest.includes(x.p.id) ? " best" : ""), style: `--c:${safeColor(x.p.color)};--i:${i}` },
+    h("span", { class: "pos num" }, x.g == null ? "–" : i + 1),
+    h("span", { class: "nm" }, h("span", { class: "sw" }), h("span", null, x.p.name + (x.p.id === highlightId ? " (jij)" : "")),
+      r.closest.includes(x.p.id) ? h("em", { class: "badge" }, x.acc === 1 ? "Voltreffer" : "Dichtstbij") : null),
+    h("span", { class: "det" }, x.g == null ? "geen antwoord" : `gokte ${fmt(x.g)} · ${pct(x.acc)} · ${offText(x.g, r.actual)}`),
+    h("span", { class: "pts" }, `+${x.pts}`))));
+}
+function hostReveal(st) {
+  const r = st.results[st.results.length - 1];
+  const anim = animOnce("rev-" + st.gameId + st.results.length);
+  const nm = pname(st, r.subject);
+  return h("div", { class: "stage " + anim },
+    h("div", { class: "card stack", style: "padding:28px" },
+      h("p", { class: "eyebrow" }, `Vraag ${st.qi + 1} van ${st.questions.length} · Onthulling`),
+      h("p", { class: "muted", style: "font-size:18px" }, r.text),
+      h("div", { class: "actual" }, h("span", { class: "big" }, fmt(r.actual)), h("span", { class: "who", style: `color:${pcolor(st, r.subject)}` }, `schatte ${nm} zelf`)),
+      Object.keys(r.guesses).length ? numberLine(st, r) : h("p", { class: "muted" }, "Niemand heeft geraden.")),
+    roundRanking(st, r),
+    h("div", { class: "controls" }, h("button", { class: "btn btn-go btn-big", onclick: toScores }, "Tussenstand")));
+}
+function leaderboard(st, highlightId, limit) {
+  const now = ranking(st), before = ranking(st, st.results.length - 1);
+  const last = st.results[st.results.length - 1];
+  const max = Math.max(1, ...now.map(x => x.total));
+  const prevPos = {}; before.forEach((x, i) => prevPos[x.p.id] = i);
+  let list = now.map((x, i) => ({ ...x, i }));
+  if (limit && list.length > limit) { const mine = list.find(x => x.p.id === highlightId); list = list.slice(0, limit); if (mine && mine.i >= limit) list.push(mine); }
+  return h("div", { class: "lb" }, list.map(x => {
+    const d = last?.points[x.p.id] || 0, mv = (prevPos[x.p.id] ?? x.i) - x.i;
+    return h("div", { class: "lb-row", style: `--c:${safeColor(x.p.color)};--w:${(x.total / max) * 100};--i:${x.i}` },
+      h("span", { class: "pos num" }, x.i + 1),
+      h("span", { class: "nm" }, x.p.name + (x.p.id === highlightId ? " (jij)" : ""), " ", mv > 0 ? h("span", { class: "mv" }, `▲${mv}`) : mv < 0 ? h("span", { class: "mv" }, `▼${-mv}`) : null),
+      h("div", { class: "barcell" }, h("div", { class: "bar" })),
+      h("span", { class: "tot" }, d ? h("small", null, `+${d}`) : null, x.total.toLocaleString("nl-NL")));
+  }));
+}
+function hostScores(st) {
+  const anim = animOnce("sc-" + st.gameId + st.results.length);
+  const last = st.qi + 1 >= st.questions.length;
+  return h("div", { class: "stage " + anim },
+    h("div", { class: "section-h" }, h("h1", { class: "display", style: "font-size:clamp(30px,5vw,54px)" }, "Tussenstand"), h("span", { class: "eyebrow" }, `na ${st.results.length} ${st.results.length === 1 ? "vraag" : "vragen"}`)),
+    h("div", { class: "card" }, leaderboard(st)),
+    h("div", { class: "controls" }, h("button", { class: "btn btn-go btn-big", onclick: nextQuestion }, last ? "Naar de eindstand" : "Volgende vraag")));
+}
+
+/* ---------- end stats ---------- */
+function median(a) { const s = a.slice().sort((x, y) => x - y), m = s.length >> 1; return s.length ? (s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2) : null; }
+function computeStats(st) {
+  const g = {}, sub = {}, wins = {};
+  let worst = null;
+  for (const r of st.results) {
+    const accs = Object.entries(r.acc);
+    for (const [id, a] of accs) {
+      (g[id] ||= []).push(a);
+      if (!worst || a < worst.a) worst = { a, id, r };
+    }
+    if (accs.length) (sub[r.subject] ||= []).push(accs.reduce((s, [, a]) => s + a, 0) / accs.length);
+    r.closest.forEach(id => wins[id] = (wins[id] || 0) + 1);
+  }
+  const mean = a => a.reduce((s, x) => s + x, 0) / a.length;
+  const best = (o, f, dir = 1) => Object.entries(o).filter(([id]) => player(st, id)).map(([id, v]) => [id, f(v)]).sort((x, y) => dir * (y[1] - x[1]))[0];
+  return {
+    kenner: best(g, mean), openBoek: best(sub, mean), mysterie: best(sub, mean, -1),
+    wins: best(wins, x => x), worst,
+    group: st.results.map(r => ({ r, med: median(Object.values(r.guesses)) }))
+  };
+}
+function progressChart(st) {
+  const W = 680, H = 250, P = { l: 44, r: 120, t: 14, b: 28 };
+  const n = st.results.length; if (!n) return null;
+  const cum = {}; st.players.forEach(p => cum[p.id] = [0]);
+  st.results.forEach(r => st.players.forEach(p => { const a = cum[p.id]; a.push(a[a.length - 1] + (r.points[p.id] || 0)); }));
+  const max = Math.max(1, ...Object.values(cum).map(a => a[a.length - 1]));
+  const x = i => P.l + i * (W - P.l - P.r) / n, y = v => H - P.b - v / max * (H - P.t - P.b);
+  const grid = [0, .25, .5, .75, 1].map(f => Math.round(max * f));
+  const ends = st.players.map(p => ({ p, v: cum[p.id][n], y: y(cum[p.id][n]) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
+  return s("svg", { viewBox: `0 0 ${W} ${Math.max(H, (ends.at(-1)?.y || 0) + 10)}`, role: "img", "aria-label": "Puntenverloop per speler" },
+    grid.map(v => s("g", {}, s("line", { x1: P.l, x2: W - P.r, y1: y(v), y2: y(v), stroke: "var(--line)", "stroke-width": 1 }),
+      s("text", { x: P.l - 8, y: y(v) + 4, "text-anchor": "end", fill: "var(--muted)", "font-size": 11, "font-family": "var(--f-mono)" }, v.toLocaleString("nl-NL")))),
+    Array.from({ length: n }, (_, i) => s("text", { x: x(i + 1), y: H - 8, "text-anchor": "middle", fill: "var(--muted)", "font-size": 11, "font-family": "var(--f-mono)" }, `V${i + 1}`)),
+    st.players.map(p => s("polyline", { points: cum[p.id].map((v, i) => `${x(i)},${y(v)}`).join(" "), fill: "none", stroke: safeColor(p.color), "stroke-width": 3, "stroke-linejoin": "round", "stroke-linecap": "round" })),
+    st.players.map(p => s("circle", { cx: x(n), cy: y(cum[p.id][n]), r: 4.5, fill: safeColor(p.color) })),
+    ends.map(e => s("text", { x: x(n) + 10, y: e.y + 4, fill: safeColor(e.p.color), "font-size": 12, "font-weight": 700, "font-family": "var(--f-body)" }, `${e.p.name.slice(0, 14)} ${e.v.toLocaleString("nl-NL")}`)));
+}
+function podium(st, anim) {
+  const rk = ranking(st);
+  const slot = (i, cls) => { const x = rk[i]; if (!x) return h("div"); return h("div", { class: `pod ${cls}`, style: `--c:${safeColor(x.p.color)}` }, h("span", { class: "nm" }, x.p.name), h("div", { class: "blk" }, h("span", { class: "p" }, i + 1), h("span", { class: "s num" }, x.total.toLocaleString("nl-NL")))); };
+  return h("div", { class: "podium " + anim }, slot(1, "p2"), slot(0, "p1"), slot(2, "p3"));
+}
+function awards(st, stats) {
+  const A = (t, id, d) => id ? h("div", { class: "award" }, h("span", { class: "t" }, t), h("span", { class: "w", style: `color:${pcolor(st, id)}` }, pname(st, id)), h("span", { class: "d" }, d)) : null;
+  const w = stats.worst;
+  return h("div", { class: "awards" },
+    stats.kenner && A("Mensenkenner", stats.kenner[0], `Gemiddeld ${pct(stats.kenner[1])} raak als gokker.`),
+    stats.openBoek && A("Open boek", stats.openBoek[0], `De groep zat gemiddeld ${pct(stats.openBoek[1])} goed bij deze persoon.`),
+    stats.mysterie && stats.mysterie[0] !== stats.openBoek?.[0] && A("Grootste raadsel", stats.mysterie[0], `Maar ${pct(stats.mysterie[1])} raak. Niemand snapt deze persoon.`),
+    stats.wins && A("Meeste keer dichtstbij", stats.wins[0], `${stats.wins[1]}× de beste gok van de ronde.`),
+    w && A("Grootste misser", w.id, `Gokte ${fmt(w.r.guesses[w.id])} bij “${w.r.text.slice(0, 60)}${w.r.text.length > 60 ? "…" : ""}”, ${pname(st, w.r.subject)} zei ${fmt(w.r.actual)}.`));
+}
+function groupTable(st, stats) {
+  return h("div", { class: "tbl-wrap" }, h("table", null,
+    h("thead", null, h("tr", null, h("th", null, "Vraag"), h("th", null, "Over"), h("th", { class: "n" }, "Eigen schatting"), h("th", { class: "n" }, "Groep (mediaan)"), h("th", null, "De groep dacht"))),
+    h("tbody", null, stats.group.map(({ r, med }) => h("tr", null,
+      h("td", null, r.text), h("td", null, pname(st, r.subject)), h("td", { class: "n" }, fmt(r.actual)), h("td", { class: "n" }, fmt(med)),
+      h("td", null, med == null ? "–" : offText(med, r.actual)))))));
+}
+function hostEnd(st) {
+  const anim = animOnce("end-" + st.gameId);
+  const stats = computeStats(st);
+  return h("div", { class: "stage " + anim },
+    h("h1", { class: "display", style: "font-size:clamp(34px,6vw,64px);text-align:center" }, "Eindstand"),
+    st.results.length ? podium(st, anim) : h("p", { class: "center muted" }, "Er zijn geen vragen gespeeld."),
+    st.results.length ? h("div", { class: "card" }, leaderboard(st)) : null,
+    st.results.length ? awards(st, stats) : null,
+    st.results.length ? h("section", { class: "card stack" }, h("h2", { class: "display", style: "font-size:22px" }, "Puntenverloop"), h("div", { class: "chart-wrap" }, progressChart(st))) : null,
+    st.results.length ? h("section", { class: "card stack" }, h("h2", { class: "display", style: "font-size:22px" }, "Groep tegen werkelijkheid"), groupTable(st, stats)) : null,
+    h("div", { class: "controls" },
+      S.ui.confirm === "new"
+        ? h("span", { class: "confirm" }, "Scores wissen en opnieuw beginnen?", h("button", { class: "btn btn-sm btn-hot", onclick: newGame }, "Ja, nieuw spel"), h("button", { class: "btn btn-sm", onclick: () => { S.ui.confirm = null; render(); } }, "Nee"))
+        : h("button", { class: "btn btn-go btn-big", onclick: () => { S.ui.confirm = "new"; render(); } }, "Nieuw spel")));
+}
+
+/* ---------- player views ---------- */
+function numberForm(id, label, onSubmit, opts = {}) {
+  const inp = h("input", { id, "data-keep": true, class: "big-input", inputmode: "decimal", autocomplete: "off", placeholder: "0", "aria-label": label, disabled: opts.disabled, enterkeyhint: "send" });
+  const err = h("p", { class: "form-err", "aria-live": "polite" });
+  return h("form", { class: "num-form", onsubmit: e => { e.preventDefault(); const v = num(inp.value); if (v == null) { err.textContent = "Vul een getal in, 0 of hoger. Bijvoorbeeld 12 of 3,5."; return; } err.textContent = ""; onSubmit(v); inp.blur(); } },
+    h("label", { class: "lbl", for: id }, label), inp,
+    h("button", { class: "btn btn-go btn-big", type: "submit", disabled: opts.disabled }, opts.cta || "Verstuur"), err);
+}
+function viewPlayer() {
+  const st = S.state;
+  const top = brand(S.myName && meIn(st) ? [h("span", { class: "pill" }, h("span", { class: "dot", style: `background:${safeColor(meIn(st).color)}` }), meIn(st).name)] : null);
+  const connNote = !S.conn && (S.everConnected || S.ui.connSlow) ? h("p", { class: "notice warn" }, "Geen verbinding met het spel. Je telefoon probeert het opnieuw.") : null;
+  if (st?.removed?.includes(S.myPid)) return h("div", { class: "stack" }, top, h("p", { class: "notice warn" }, "De host heeft je uit dit spel gehaald."));
+  if (!S.myName || !S.joined) return h("div", { class: "stack" }, top, connNote, playerJoin(st));
+  const me = meIn(st);
+  if (!st) return h("div", { class: "stack" }, top, connNote,
+    S.ui.loadNote ? h("p", { class: "notice warn" }, S.ui.loadNote) : h("p", { class: "card status-line" }, `Zoeken naar spel ${S.code}`, h("span", { class: "dots" }, h("i"), h("i"), h("i"))),
+    h("button", { class: "linkbtn", onclick: () => { location.hash = ""; } }, "Andere code invullen"));
+  if (!me) return h("div", { class: "stack" }, top, h("p", { class: "card status-line" }, "Aanmelden bij de host", h("span", { class: "dots" }, h("i"), h("i"), h("i"))), h("p", { class: "muted" }, "Staat het grote scherm open? Daar verschijnt je naam zo."));
+  const body = st.phase === "lobby" ? pLobby(st, me)
+    : st.phase === "answer" ? pAnswer(st, me)
+    : st.phase === "guess" ? pGuess(st, me)
+    : st.phase === "reveal" ? pReveal(st, me)
+    : st.phase === "scores" ? pScores(st, me)
+    : pEnd(st, me);
+  return h("div", { class: "stack" }, top, body);
+}
+function playerJoin(st) {
+  const inp = h("input", { id: "join-name", "data-keep": true, class: "big-input", style: "font-size:28px", maxlength: 24, autocomplete: "off", placeholder: "Je naam", value: S.myName || "", "aria-label": "Je naam", enterkeyhint: "go" });
+  return h("form", { class: "card stack", onsubmit: e => { e.preventDefault(); if (!cleanName(inp.value)) return; S.joined = true; joinAs(inp.value); } },
+    h("h1", { class: "display", style: "font-size:30px" }, "Doe mee"),
+    h("p", { class: "muted" }, "Vul de naam in die je vrienden kennen. Je verschijnt dan op het grote scherm."),
+    inp, h("button", { class: "btn btn-go btn-big", type: "submit" }, "Doe mee"),
+    st?.players?.length ? h("div", { class: "stack" }, h("p", { class: "eyebrow" }, "Al in het spel"), h("div", { class: "chips" }, st.players.map(p => h("span", { class: "chip nox", style: `--c:${safeColor(p.color)}` }, h("span", { class: "sw" }), h("span", { class: "nm" }, p.name))))) : null);
+}
+function pLobby(st, me) {
+  return h("div", { class: "stack" },
+    h("div", { class: "card center" }, h("p", { class: "ok", style: "font-size:20px" }, `Je doet mee als ${me.name}`), h("p", { class: "muted" }, "Wacht tot de host het spel start. Laat je telefoon open."),
+      h("button", { class: "linkbtn", onclick: () => { S.joined = false; render(); } }, "Naam wijzigen")),
+    h("div", { class: "stack" }, h("p", { class: "eyebrow" }, `${st.players.length} spelers`), h("div", { class: "chips" }, st.players.map(p => h("span", { class: "chip nox", style: `--c:${safeColor(p.color)}` }, h("span", { class: "sw" }), h("span", { class: "nm" }, p.name + (p.id === me.id ? " (jij)" : "")))))),
+    howTo());
+}
+function pQ(st) {
+  const q = curQ(st);
+  return h("div", { class: "card stack" },
+    h("p", { class: "eyebrow" }, `Vraag ${st.qi + 1} van ${st.questions.length}`),
+    h("p", { class: "about", style: `--c:${pcolor(st, q.subject)}` }, h("span", { class: "sw" }), "Over ", h("b", null, q.subject === meIn(st)?.id ? "jou" : pname(st, q.subject))),
+    h("h1", { class: "q-text" }, q.text));
+}
+function sentNote(recorded) {
+  const mine = S.myAns && S.myAns.k === curKey(S.state) ? S.myAns.v : null;
+  if (recorded != null) return h("p", { class: "ok", "aria-live": "polite" }, `Ontvangen: ${fmt(recorded)}. Je kunt het nog aanpassen tot de host verder gaat.`);
+  if (mine != null) return h("p", { class: "muted", "aria-live": "polite" }, `Versturen: ${fmt(mine)}…`);
+  return null;
+}
+function pAnswer(st, me) {
+  const q = curQ(st);
+  if (q.subject !== me.id) return h("div", { class: "stack" }, pQ(st), h("p", { class: "card status-line" }, `${pname(st, q.subject)} vult nu een eigen inschatting in. Bedenk alvast wat je gaat raden.`));
+  return h("div", { class: "stack" }, pQ(st),
+    h("div", { class: "card stack" },
+      numberForm(`ans-${st.gameId}-${q.id}`, "Jouw eigen inschatting (niemand ziet het)", playerSubmit, { cta: "Verstuur mijn antwoord" }),
+      sentNote(st.pending.subject)));
+}
+function pGuess(st, me) {
+  const q = curQ(st), left = cdLeft(st), over = left === 0;
+  const g = guessers(st), inCount = g.filter(p => st.pending.guesses[p.id] != null).length;
+  if (q.subject === me.id) return h("div", { class: "stack" }, pQ(st), h("div", { class: "card center" }, h("p", { class: "status-line" }, "Iedereen raadt nu wat jij hebt ingevuld."), h("p", { class: "counter num" }, `${inCount} van ${g.length} binnen`)));
+  return h("div", { class: "stack" }, pQ(st),
+    h("div", { class: "card stack" },
+      left != null ? h("div", { class: "row", style: "justify-content:space-between" }, h("span", { class: "eyebrow" }, "Tijd"), h("span", { class: "timer" + (left <= 5 ? " low" : ""), style: "font-size:40px", "data-cd": true }, left)) : null,
+      numberForm(`g-${st.gameId}-${q.id}`, `Wat heeft ${pname(st, q.subject)} ingevuld?`, playerSubmit, { cta: "Verstuur mijn gok" }),
+      over ? h("p", { class: "muted" }, "De tijd is om. De host onthult zo.") : null,
+      sentNote(st.pending.guesses[me.id])));
+}
+function pReveal(st, me) {
+  const r = st.results[st.results.length - 1];
+  const anim = animOnce("prev-" + st.gameId + st.results.length);
+  if (r.subject === me.id) {
+    const accs = Object.values(r.acc), avg = accs.length ? accs.reduce((a, b) => a + b, 0) / accs.length : null;
+    return h("div", { class: "stack " + anim }, h("div", { class: "card center" },
+      h("p", { class: "eyebrow" }, "Jouw antwoord"), h("span", { class: "big-score" }, fmt(r.actual)),
+      avg != null ? h("p", null, `De groep zat gemiddeld ${pct(avg)} goed bij jou.`) : null),
+      roundRanking(st, r, me.id));
+  }
+  const g = r.guesses[me.id], pts = r.points[me.id] || 0;
+  return h("div", { class: "stack " + anim },
+    h("div", { class: "card center" },
+      h("p", { class: "eyebrow" }, `${pname(st, r.subject)} zei`), h("span", { class: "big-score" }, fmt(r.actual)),
+      g == null ? h("p", { class: "muted" }, "Je hebt niet geraden.")
+        : h("p", { style: "font-size:18px" }, `Jij gokte ${fmt(g)} · ${pct(r.acc[me.id])} raak`),
+      h("p", { class: "display", style: "font-size:34px;color:var(--mint)" }, `+${pts}`),
+      r.closest.includes(me.id) ? h("span", { class: "badge" }, r.acc[me.id] === 1 ? "Voltreffer" : "Dichtstbij") : null),
+    roundRanking(st, r, me.id));
+}
+function pScores(st, me) {
+  const rk = ranking(st), pos = rk.findIndex(x => x.p.id === me.id);
+  return h("div", { class: "stack " + animOnce("psc-" + st.gameId + st.results.length) },
+    h("div", { class: "card center" }, h("p", { class: "eyebrow" }, "Jij staat"), h("span", { class: "big-score" }, `#${pos + 1}`), h("p", { class: "num" }, `${(rk[pos]?.total || 0).toLocaleString("nl-NL")} punten`)),
+    h("div", { class: "card" }, leaderboard(st, me.id, 5)));
+}
+function pEnd(st, me) {
+  const rk = ranking(st), pos = rk.findIndex(x => x.p.id === me.id);
+  const anim = animOnce("pend-" + st.gameId);
+  const accs = st.results.map(r => r.acc[me.id]).filter(a => a != null);
+  const wins = st.results.filter(r => r.closest.includes(me.id)).length;
+  return h("div", { class: "stack " + anim },
+    h("div", { class: "card center" }, h("p", { class: "eyebrow" }, "Eindstand"), h("span", { class: "big-score" }, `#${pos + 1}`),
+      h("p", { class: "num" }, `${(rk[pos]?.total || 0).toLocaleString("nl-NL")} punten`),
+      accs.length ? h("p", { class: "muted" }, `Gemiddeld ${pct(accs.reduce((a, b) => a + b, 0) / accs.length)} raak · ${wins}× dichtstbij`) : null),
+    st.results.length ? podium(st, anim) : null,
+    st.results.length ? awards(st, computeStats(st)) : null);
+}
+
+/* ---------- boot ---------- */
+function connect(onConnect, onMessage) {
+  if (!window.mqtt) { S.ui.connSlow = true; render(); return; }
+  const c = mqtt.connect(BROKER, { clientId: "kjm_" + rid() + rid(), clean: true, reconnectPeriod: 2500, connectTimeout: 10000, keepalive: 30, protocolVersion: 4 });
+  S.mq = c;
+  const slow = setTimeout(() => { if (!S.conn) { S.ui.connSlow = true; render(); } }, 8000);
+  c.on("connect", () => { clearTimeout(slow); S.conn = true; S.everConnected = true; S.ui.connSlow = false; onConnect(); render(); });
+  const down = () => { if (S.conn) { S.conn = false; render(); } };
+  c.on("close", down); c.on("offline", down);
+  c.on("error", () => {});
+  c.on("message", (t, buf, packet) => {
+    let data = null;
+    try { const txt = buf.toString(); data = txt ? JSON.parse(txt) : null; } catch {}
+    onMessage(t, data, packet);
+  });
+}
+function startHost(code) {
+  S.role = "host"; S.code = code; S.ui.loading = false;
+  history.replaceState(null, "", "#host-" + code);
+  S.state = ls.get("kjm-host-" + code, null);
+  if (!S.state?.players) S.state = newState();
+  if (!S.state.removed) S.state.removed = [];
+  save();
+  connect(() => { S.mq.subscribe(topic(code, "in/+"), { qos: 1 }); flush(); }, (t, data, packet) => {
+    const pid = t.split("/").pop();
+    if (!data || typeof data !== "object") S.peers.delete(pid);
+    else S.peers.set(pid, { presence: data, seen: packet?.retain ? Math.min(Date.now(), +data.t || 0) : Date.now() });
+    clearTimeout(S.peerT); S.peerT = setTimeout(hostPeers, 60);
+  });
+  setInterval(hostPeers, 5000);
+  checkAuto(); render();
+}
+function startPlayer(code) {
+  S.role = "player"; S.code = code; S.ui.loading = false;
+  if (S.myName) S.joined = true;
+  const notFound = setTimeout(() => { if (!S.state) { S.ui.loadNote = `Geen spel gevonden met code ${code}. Klopt de code, en staat het grote scherm open?`; render(); } }, 9000);
+  connect(() => { S.mq.subscribe(topic(code, "state"), { qos: 1 }); if (S.joined) joinAs(S.myName); }, (t, data) => {
+    if (t !== topic(code, "state") || !data?.players) return;
+    clearTimeout(notFound); S.ui.loadNote = null; S.state = data; render();
+  });
+  setInterval(() => { if (S.joined && S.conn) pPresence({}); }, 8000);
+  render();
+}
+function boot() {
+  S.deviceId = ls.get("kjm-dev", null) || (() => { const d = rid() + rid(); ls.set("kjm-dev", d); return d; })();
+  S.myPid = String(S.deviceId).replace(/[^a-z0-9]/gi, "") || rid();
+  S.ui.loading = false;
+  const hsh = decodeURIComponent(location.hash.slice(1));
+  if (/^host-/i.test(hsh)) { const c = cleanCode(hsh.slice(5)); if (c.length === 6) return startHost(c); }
+  const c = cleanCode(hsh);
+  if (c.length === 6) return startPlayer(c);
+  S.role = "landing"; render();
+}
+window.addEventListener("hashchange", () => location.reload());
+
+/* countdown + timeouts */
+setInterval(() => {
+  const st = S.state; if (!st || st.phase !== "guess" || !st.endsAt) return;
+  const left = cdLeft(st);
+  document.querySelectorAll("[data-cd]").forEach(el => { el.textContent = left; el.classList.toggle("low", left <= 5); });
+  if (left === 0 && S.ui.expired !== st.endsAt) { S.ui.expired = st.endsAt; render(); }
+  if (S.role === "host" && Date.now() > st.endsAt + 800 && st.phase === "guess") reveal();
+}, 250);
+
+boot();
+})();
+</script>
+</body>
+</html>
