@@ -353,11 +353,12 @@ function icon(name) {
 /* ---------- scoring ---------- */
 // Accuracy = smaller/greater of guess and answer (+1 smoothing so 0 works). 2x off = ~50%, 10x off = ~10%.
 function accuracy(g, a) { g = Math.max(0, g); a = Math.max(0, a); return (Math.min(g, a) + 1) / (Math.max(g, a) + 1); }
+// Points follow the ratio; the bonus goes to the smallest plain difference, so 2 and 4 tie around 3.
 function scoreRound(actual, guesses, settings) {
-  const acc = {}, points = {};
-  let best = -1;
-  for (const [id, g] of Object.entries(guesses)) { acc[id] = accuracy(g, actual); best = Math.max(best, acc[id]); }
-  const closest = Object.keys(acc).filter(id => acc[id] >= best - 1e-9);
+  const acc = {}, points = {}, dist = {};
+  let best = Infinity;
+  for (const [id, g] of Object.entries(guesses)) { acc[id] = accuracy(g, actual); dist[id] = Math.abs(g - actual); best = Math.min(best, dist[id]); }
+  const closest = Object.keys(acc).filter(id => dist[id] <= best + 1e-9);
   for (const id of Object.keys(acc)) {
     let p = Math.round(1000 * acc[id]);
     if (settings.bonus && closest.includes(id)) p += 250;
