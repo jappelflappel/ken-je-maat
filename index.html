@@ -167,6 +167,8 @@ select.field{padding-right:28px}
 .code-big{font-size:32px;letter-spacing:.06em;font-weight:500}
 .url{word-break:break-all}
 .qlist{display:flex;flex-direction:column;gap:8px}
+.setrow{flex-wrap:wrap;padding-block:10px}
+.set-name{font-weight:600}
 .qrow{display:grid;grid-template-columns:24px minmax(120px,170px) minmax(0,1fr) 32px;gap:8px;align-items:center}
 .qrow .n{color:var(--muted);text-align:right;font-size:14px}
 
@@ -626,6 +628,7 @@ function viewLanding() {
           h("div", { class: "inline" },
             h("button", { class: "btn btn-primary", onclick: () => startHost(newCode()) }, "Nieuw spel"),
             lastSt?.players ? h("button", { class: "btn btn-quiet", onclick: () => startHost(last) }, `Verder met ${last}`) : null))),
+      landingSets(),
       h("section", { class: "block" },
         h("h2", { class: "panel-title" }, "Zo gaat een ronde"),
         h("ol", { class: "grid steps" }, steps.map(([t, d, dur]) => h("li", { class: "panel s4 step" }, h("h3", null, t), h("p", { class: "muted" }, d), h("p", { class: "cap num" }, dur))))),
@@ -766,6 +769,7 @@ function hostLobby(st) {
         h("button", { class: "btn btn-quiet btn-sm", onclick: distribute, disabled: !st.players.length }, "Verdeel eerlijk"),
         h("button", { class: "btn btn-quiet btn-sm", onclick: fill, disabled: !st.players.length, title: "Twee vragen per speler, eerlijk verdeeld" }, "Vul aan tot 2 per speler")),
       st.players.length ? h("div", { class: "inline wrap" }, st.players.map(p => h("span", { class: "tag" + (counts[p.id] ? "" : " warn") }, `${p.name}: ${counts[p.id]}`))) : null),
+    setsPanel(st),
     h("section", { class: "actionbar" },
       h("label", { class: "inline", for: "set-timer" }, h("span", { class: "muted" }, "Tijd om te raden"),
         h("select", { id: "set-timer", class: "field", style: "width:auto", onchange: e => mutate(st => st.settings.timer = +e.target.value) },
@@ -777,6 +781,97 @@ function hostLobby(st) {
       reason ? h("span", { class: "cap" }, reason) : null,
       h("button", { class: "btn btn-primary btn-lg", disabled: !!reason, onclick: startGame }, "Start spel")));
 }
+/* ---------- saved question lists ---------- */
+// A list keeps question texts and who each is about by name, plus the player names, so it can be
+// prepared ahead and loaded into any game. Phones that join with the same name take over that player.
+const SETS_KEY = "kjm-sets";
+const getSets = () => { const s = ls.get(SETS_KEY, []); return Array.isArray(s) ? s.filter(x => x && typeof x === "object") : []; };
+const putSets = s => ls.set(SETS_KEY, s);
+function cleanSet(raw, keepId) {
+  const str = (v, n) => String(v ?? "").replace(/[\u0000-\u001f]/g, " ").trim().slice(0, n);
+  const players = (Array.isArray(raw?.players) ? raw.players : []).map(n => cleanName(n)).filter(Boolean).slice(0, 40);
+  const questions = (Array.isArray(raw?.questions) ? raw.questions : []).map(q => ({ text: str(typeof q === "string" ? q : q?.text, 160), subject: q?.subject ? cleanName(q.subject) || null : null })).filter(q => q.text).slice(0, 200);
+  return { id: keepId && typeof raw?.id === "string" ? raw.id.slice(0, 20) : rid(), name: str(raw?.name, 40) || "Naamloze lijst", savedAt: Date.now(), players, questions };
+}
+function setFromState(st, name) {
+  return cleanSet({ name, players: st.players.map(p => p.name), questions: st.questions.map(q => ({ text: q.text, subject: player(st, q.subject)?.name || null })) });
+}
+function saveSet(name) {
+  const set = setFromState(S.state, name);
+  const sets = getSets(), i = sets.findIndex(x => x.name.toLowerCase() === set.name.toLowerCase());
+  if (i >= 0) { set.id = sets[i].id; sets[i] = set; } else sets.unshift(set);
+  putSets(sets.slice(0, 50));
+  S.ui.setsNote = `“${set.name}” bewaard: ${set.questions.length} ${set.questions.length === 1 ? "vraag" : "vragen"}, ${set.players.length} ${set.players.length === 1 ? "speler" : "spelers"}.`;
+  render();
+}
+function applySet(set) {
+  S.ui.confirm = null;
+  S.ui.setsNote = `“${set.name}” geladen.`;
+  mutate(st => {
+    for (const n of set.players || []) if (!st.players.some(p => p.name.toLowerCase() === n.toLowerCase()) && st.players.length < 40) st.players.push({ id: rid(), name: uniqueName(st, n), color: nextColor(st), pid: null });
+    st.questions = (set.questions || []).map(q => ({ id: rid(), text: q.text, subject: st.players.find(p => q.subject && p.name.toLowerCase() === q.subject.toLowerCase())?.id || null }));
+  });
+}
+function exportSet(set) {
+  const blob = new Blob([JSON.stringify({ kenJeMaat: 1, ...set }, null, 2)], { type: "application/json" });
+  const a = h("a", { href: URL.createObjectURL(blob), download: `ken-je-maat-${set.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "lijst"}.json` });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+function importSets(file) {
+  file.text().then(txt => {
+    const data = JSON.parse(txt);
+    const items = (Array.isArray(data) ? data : [data]).map(x => cleanSet(x)).filter(x => x.questions.length);
+    if (!items.length) throw new Error("leeg");
+    const sets = getSets();
+    for (const it of items) { const i = sets.findIndex(x => x.name.toLowerCase() === it.name.toLowerCase()); if (i >= 0) sets[i] = { ...it, id: sets[i].id }; else sets.unshift(it); }
+    putSets(sets.slice(0, 50));
+    S.ui.setsNote = `${items.length === 1 ? `“${items[0].name}”` : `${items.length} lijsten`} geïmporteerd.`;
+    render();
+  }).catch(() => { S.ui.setsNote = "Dit bestand kon niet worden gelezen. Kies een .json-bestand dat je eerder uit Ken je maat hebt geëxporteerd."; render(); });
+}
+function importButton() {
+  const inp = h("input", { type: "file", accept: ".json,application/json", hidden: true, onchange: e => { const f = e.target.files?.[0]; if (f) importSets(f); e.target.value = ""; } });
+  return h("span", null, inp, h("button", { class: "btn btn-quiet btn-sm", type: "button", onclick: () => inp.click() }, "Importeer bestand"));
+}
+function setRow(set, actions) {
+  return h("div", { class: "rowcard setrow" },
+    h("span", { class: "set-name" }, set.name),
+    h("span", { class: "cap num" }, `${set.questions.length} ${set.questions.length === 1 ? "vraag" : "vragen"} · ${set.players.length} ${set.players.length === 1 ? "speler" : "spelers"}`),
+    h("span", { class: "spacer" }), actions);
+}
+function setsPanel(st) {
+  const sets = getSets();
+  const nameIn = h("input", { id: "set-name", "data-keep": true, class: "field", maxlength: 40, placeholder: "Naam van de lijst, bijvoorbeeld Vrijdag bij Tom", "aria-label": "Naam van de vragenlijst" });
+  const hasQs = st.questions.some(q => q.text.trim());
+  return h("section", { class: "panel" },
+    h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Vragenlijsten"), h("span", { class: "chip num" }, sets.length)),
+    h("p", { class: "cap" }, "Bewaar de vragen en spelers van hierboven om later te gebruiken. Lijsten blijven in deze browser staan; exporteer ze om ze op een ander apparaat te openen."),
+    h("form", { class: "inline", onsubmit: e => { e.preventDefault(); if (!hasQs) { S.ui.setsNote = "Er staan nog geen vragen om te bewaren."; render(); return; } const v = nameIn.value; nameIn.value = ""; saveSet(v); } },
+      nameIn, h("button", { class: "btn btn-primary", type: "submit" }, "Bewaar lijst")),
+    S.ui.setsNote ? h("p", { class: "cap", "aria-live": "polite" }, S.ui.setsNote) : null,
+    sets.length ? h("div", { class: "rows" }, sets.map(set => setRow(set,
+      S.ui.confirm === "del:" + set.id
+        ? h("span", { class: "confirm" }, "Verwijderen?", h("button", { class: "btn btn-sm btn-primary", onclick: () => { putSets(getSets().filter(x => x.id !== set.id)); S.ui.confirm = null; S.ui.setsNote = `“${set.name}” verwijderd.`; render(); } }, "Ja"), h("button", { class: "btn btn-sm btn-quiet", onclick: () => { S.ui.confirm = null; render(); } }, "Nee"))
+        : S.ui.confirm === "load:" + set.id
+          ? h("span", { class: "confirm" }, "Huidige vragen vervangen?", h("button", { class: "btn btn-sm btn-primary", onclick: () => applySet(set) }, "Ja"), h("button", { class: "btn btn-sm btn-quiet", onclick: () => { S.ui.confirm = null; render(); } }, "Nee"))
+          : h("span", { class: "inline" },
+              h("button", { class: "btn btn-quiet btn-sm", onclick: () => { if (hasQs) { S.ui.confirm = "load:" + set.id; render(); } else applySet(set); } }, "Laden"),
+              h("button", { class: "btn btn-quiet btn-sm", onclick: () => exportSet(set) }, "Exporteer"),
+              h("button", { class: "icon-btn", "aria-label": `${set.name} verwijderen`, title: "Verwijderen", onclick: () => { S.ui.confirm = "del:" + set.id; render(); } }, icon("x")))))) : null,
+    h("div", { class: "inline wrap" }, importButton()));
+}
+function landingSets() {
+  const sets = getSets();
+  return h("section", { class: "panel block" },
+    h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Voorbereide vragenlijsten"), sets.length ? h("span", { class: "chip num" }, sets.length) : null),
+    sets.length
+      ? h("div", { class: "rows" }, sets.map(set => setRow(set, h("button", { class: "btn btn-primary btn-sm", onclick: () => { startHost(newCode()); applySet(set); } }, "Start spel met deze lijst"))))
+      : h("p", { class: "cap" }, "Bereid je vragen thuis voor: start een nieuw spel, zet de vragen klaar en klik op Bewaar lijst. Of importeer een lijst die je eerder hebt geëxporteerd."),
+    S.ui.setsNote ? h("p", { class: "cap", "aria-live": "polite" }, S.ui.setsNote) : null,
+    h("div", { class: "inline wrap" }, importButton()));
+}
+
 function joinUrl() { return location.origin + location.pathname + "#" + S.code; }
 function joinQr(url) {
   const qr = h("div", { class: "qr", role: "img", "aria-label": "QR-code om mee te doen" });
