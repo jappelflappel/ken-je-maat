@@ -348,7 +348,7 @@ function s(tag, attrs, ...kids) {
   return el;
 }
 
-const ICONS = { x: "M6 6l12 12M18 6L6 18", up: "M12 19V5M5 12l7-7 7 7", down: "M12 5v14M19 12l-7 7-7-7" };
+const ICONS = { back: "M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3", x: "M6 6l12 12M18 6L6 18", up: "M12 19V5M5 12l7-7 7 7", down: "M12 5v14M19 12l-7 7-7-7" };
 function icon(name) {
   return s("svg", { viewBox: "0 0 24 24", width: 16, height: 16, fill: "none", stroke: "currentColor", "stroke-width": 2.5, "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true", class: "ico" }, s("path", { d: ICONS[name] }));
 }
@@ -477,7 +477,17 @@ function flush() {
 
 /* ---------- host: game flow ---------- */
 function playable(st) { return st.questions.filter(q => q.text.trim() && player(st, q.subject)); }
+// "Stap terug": the state just before the last game-flow step, so a mis-click can be undone with all answers kept.
+const remember = () => { S.undo = clone(S.state); };
+function undoStep() {
+  if (!S.undo) return;
+  clearTimeout(S.autoT);
+  S.state = S.undo; S.undo = null; S.ui.confirm = null; S.ui.manual = null;
+  if (S.state.phase === "guess") S.state.endsAt = null; // no timer after going back, or it would reveal again at once
+  S.state.updatedAt = Date.now(); save(); render();
+}
 function startGame() {
+  S.undo = null;
   mutate(st => {
     st.questions = playable(st).map(q => ({ ...q, text: q.text.trim() }));
     st.results = []; st.qi = 0; st.gameId = rid();
@@ -491,6 +501,7 @@ function enterQuestion(st) {
 }
 function goGuess() {
   clearTimeout(S.autoT);
+  if (S.state.phase === "answer") remember();
   mutate(st => {
     if (st.phase !== "answer" || st.pending.subject == null) return;
     st.phase = "guess"; st.endsAt = st.settings.timer ? Date.now() + st.settings.timer * 1000 : null;
@@ -498,6 +509,7 @@ function goGuess() {
 }
 function reveal() {
   clearTimeout(S.autoT);
+  if (S.state.phase === "guess") remember();
   mutate(st => {
     if (st.phase !== "guess") return;
     const q = curQ(st), actual = st.pending.subject;
@@ -507,11 +519,11 @@ function reveal() {
     st.phase = "reveal"; st.endsAt = null;
   });
 }
-const toScores = () => mutate(st => { if (st.phase === "reveal") st.phase = "scores"; });
-const nextQuestion = () => mutate(st => { st.qi++; enterQuestion(st); });
-const skipQuestion = () => { clearTimeout(S.autoT); mutate(st => { st.qi++; enterQuestion(st); }); };
-const toLobby = () => { clearTimeout(S.autoT); S.ui.confirm = null; mutate(st => { st.phase = "lobby"; st.endsAt = null; st.pending = { subject: null, guesses: {} }; }); };
-const newGame = () => { S.ui.confirm = null; const prev = S.state; S.state = newState(prev); save(); render(); };
+const toScores = () => { remember(); mutate(st => { if (st.phase === "reveal") st.phase = "scores"; }); };
+const nextQuestion = () => { remember(); mutate(st => { st.qi++; enterQuestion(st); }); };
+const skipQuestion = () => { clearTimeout(S.autoT); remember(); mutate(st => { st.qi++; enterQuestion(st); }); };
+const toLobby = () => { clearTimeout(S.autoT); S.ui.confirm = null; S.undo = null; mutate(st => { st.phase = "lobby"; st.endsAt = null; st.pending = { subject: null, guesses: {} }; }); };
+const newGame = () => { S.ui.confirm = null; S.undo = null; const prev = S.state; S.state = newState(prev); save(); render(); };
 
 function recordValue(st, pl, v) {
   const q = curQ(st); if (!q) return false;
@@ -545,6 +557,7 @@ function hostPeers() {
     const fresh = Date.now() - p.seen < 25000;
     if (!name || st.removed.includes(pid)) continue;
     let pl = st.players.find(x => x.pid === pid);
+    if (pr.unclaim) { const mine = st.players.find(x => x.pid === pid); if (mine) { mine.pid = null; changed = true; } continue; }
     if (!pl && typeof pr.claim === "string") { pl = st.players.find(x => x.id === pr.claim && !x.pid); if (pl) { pl.pid = pid; changed = true; } }
     if (!pl) {
       pl = st.players.find(x => !x.pid && x.name.toLowerCase() === name.toLowerCase());
@@ -572,7 +585,7 @@ function pPresence(patch) {
 function joinAs(name, claim) {
   S.myName = cleanName(name); if (!S.myName) return;
   ls.set("kjm-name", S.myName);
-  pPresence({ role: "player", pid: S.myPid, name: S.myName, claim: claim || null, ans: null });
+  pPresence({ role: "player", pid: S.myPid, name: S.myName, claim: claim || null, unclaim: null, ans: null });
   render();
 }
 function playerSubmit(v) {
@@ -594,7 +607,7 @@ function restoreInputs(c) {
   if (c.focus) { const el = document.getElementById(c.focus); if (el) { el.focus({ preventScroll: true }); if (c.sel && el.setSelectionRange) try { el.setSelectionRange(c.sel[0], c.sel[1]); } catch {} } }
 }
 function render() {
-  const key = JSON.stringify([S.role, S.code, S.state, [...S.online].sort(), S.ui, S.myAns, S.myName, !!S.joined, S.conn, S.everConnected]);
+  const key = JSON.stringify([S.role, S.code, S.state, [...S.online].sort(), S.ui, S.myAns, S.myName, !!S.joined, S.conn, S.everConnected, !!S.undo]);
   if (key === S.lastKey) return;
   S.lastKey = key;
   const app = $("#app");
@@ -703,6 +716,7 @@ function hostMeta() {
   const items = [];
   items.push(h("span", { class: "pill num" }, "Code ", h("b", null, S.code)));
   items.push(h("span", { class: "pill" }, h("span", { class: "dot" + (S.conn ? "" : " off") }), S.conn ? `${S.online.size} online` : "Geen verbinding"));
+  if (st && st.phase !== "lobby" && S.undo) items.push(h("button", { class: "btn btn-quiet btn-sm", onclick: undoStep, "aria-label": "Stap terug", title: "Ga terug naar de vorige stap; alle antwoorden blijven bewaard" }, icon("back"), "Stap terug"));
   if (st && st.phase !== "lobby") {
     if (S.ui.confirm === "stop") items.push(h("span", { class: "confirm" }, "Terug naar de lobby?", h("button", { class: "btn btn-sm btn-primary", onclick: toLobby }, "Ja"), h("button", { class: "btn btn-sm btn-quiet", onclick: () => { S.ui.confirm = null; render(); } }, "Nee")));
     else items.push(h("button", { class: "linkbtn", onclick: () => { S.ui.confirm = "stop"; render(); } }, "Lobby"));
@@ -1190,6 +1204,12 @@ function passForm() {
       h("p", { class: "sub" }, S.ui.badPass ? "Dit wachtwoord klopt niet. Kijk op het grote scherm, of scan de QR-code." : "Het staat op het grote scherm, naast de code. Met de QR-code hoef je het niet in te vullen.")),
     h("div", { class: "panel" }, inp, h("button", { class: "btn btn-primary btn-lg btn-block", type: "submit" }, "Verder"), err));
 }
+// Give the chosen name back to the host so it shows up in "Wie ben jij?" again, then choose anew.
+function releaseName() {
+  pPresence({ claim: null, unclaim: Date.now(), ans: null });
+  S.joined = false; S.ui.typeName = false; ls.set("kjm-joined", null);
+  render();
+}
 function pickMe(p) {
   S.joined = true; ls.set("kjm-joined", S.code);
   joinAs(p.name, p.id);
@@ -1211,7 +1231,8 @@ function pLobby(st, me) {
     h("header", { class: "greet" }, h("h1", { class: "title" }, `Je doet mee, ${me.name}.`), h("p", { class: "sub" }, "Wacht tot de host start en laat je telefoon open.")),
     h("div", { class: "panel" }, h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Spelers"), h("span", { class: "chip num" }, st.players.length)),
       h("div", { class: "inline wrap" }, st.players.map(p => person(p, p.id === me.id ? " (jij)" : "")))),
-    h("div", null, h("button", { class: "linkbtn", onclick: () => { S.joined = false; S.ui.typeName = true; render(); } }, "Naam wijzigen")));
+    h("div", { class: "inline wrap" },
+      h("button", { class: "btn btn-quiet btn-sm", onclick: releaseName }, icon("back"), "Verkeerde naam gekozen?")));
 }
 function pQ(st) {
   const q = curQ(st), mine = q.subject === meIn(st)?.id;
