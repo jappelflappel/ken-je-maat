@@ -165,6 +165,7 @@ select.field{padding-right:28px}
 .qr{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;width:100%;max-width:220px;aspect-ratio:1}
 .qr svg{display:block;width:100%;height:100%}
 .code-big{font-size:32px;letter-spacing:.06em;font-weight:500}
+.pass{letter-spacing:.08em;color:var(--text)}
 .url{word-break:break-all}
 .qlist{display:flex;flex-direction:column;gap:8px}
 .setrow{flex-wrap:wrap;padding-block:10px}
@@ -390,8 +391,28 @@ function ranking(st, upto) {
 // presence (name + current answer, retained) to kenjemaat/v1/<code>/in/<pid>.
 const BROKER = "wss://broker.hivemq.com:8884/mqtt";
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const topic = (code, sub) => `kenjemaat/v1/${code}/${sub}`;
-const newCode = () => Array.from({ length: 6 }, () => CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]).join("");
+const topic = (code, sub) => `kenjemaat/v2/${code}/${sub}`;
+const newCode = () => Array.from({ length: 6 }, () => CODE_CHARS[crypto.getRandomValues(new Uint32Array(1))[0] % CODE_CHARS.length]).join("");
+const newPass = newCode;
+// Every message on the public broker is sealed with AES-GCM. The key comes from the game's password
+// (PBKDF2, salted with the code), so the broker and anyone without the password see only noise.
+const te = new TextEncoder(), td = new TextDecoder();
+const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const unb64 = s => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+async function deriveKey(code, pass) {
+  const base = await crypto.subtle.importKey("raw", te.encode(pass), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt: te.encode("kenjemaat:" + code), iterations: 150000, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+}
+async function seal(obj) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, S.key, te.encode(JSON.stringify(obj)));
+  return JSON.stringify({ v: 2, iv: b64(iv), ct: b64(ct) });
+}
+async function unseal(txt) {
+  const o = JSON.parse(txt);
+  if (o?.v !== 2) throw new Error("format");
+  return JSON.parse(td.decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(o.iv) }, S.key, unb64(o.ct))));
+}
 const cleanCode = c => String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
 const S = {
   role: null,        // "landing" | "host" | "player"
@@ -431,18 +452,27 @@ function uniqueName(st, name) {
 }
 
 /* ---------- host: persistence ---------- */
-function mutate(fn) { fn(S.state); S.state.updatedAt = Date.now(); save(); render(); }
+function mutate(fn) { S.drafts = {}; fn(S.state); S.state.updatedAt = Date.now(); save(); render(); }
 function save() {
   ls.set("kjm-host-" + S.code, S.state);
   ls.set("kjm-last-host", S.code);
   clearTimeout(S.writeT); S.writeT = setTimeout(flush, 150);
 }
+// What the phones get: past and current questions only, and who has answered, never what they answered.
+function publicState(st) {
+  const pub = clone(st);
+  const shown = i => pub.phase === "end" || (pub.phase !== "lobby" && i <= pub.qi);
+  pub.questions = pub.questions.map((q, i) => shown(i) ? q : { id: q.id, text: "", subject: null });
+  pub.pending = { subject: st.pending.subject != null ? true : null, guesses: Object.fromEntries(Object.keys(st.pending.guesses).map(id => [id, true])) };
+  return pub;
+}
 function flush() {
-  if (!S.mq || !S.state) return;
-  S.mq.publish(topic(S.code, "state"), JSON.stringify(S.state), { qos: 1, retain: true }, err => {
+  if (!S.mq || !S.state || !S.key) return;
+  const snap = publicState(S.state);
+  S.pubChain = (S.pubChain || Promise.resolve()).then(() => seal(snap)).then(payload => S.mq.publish(topic(S.code, "state"), payload, { qos: 1, retain: true }, err => {
     const msg = err ? "Versturen naar de telefoons lukt even niet. Het spel probeert het opnieuw zodra er verbinding is." : null;
     if (msg !== S.ui.saveErr) { S.ui.saveErr = msg; render(); }
-  });
+  })).catch(() => {});
 }
 
 /* ---------- host: game flow ---------- */
@@ -515,6 +545,7 @@ function hostPeers() {
     const fresh = Date.now() - p.seen < 25000;
     if (!name || st.removed.includes(pid)) continue;
     let pl = st.players.find(x => x.pid === pid);
+    if (!pl && typeof pr.claim === "string") { pl = st.players.find(x => x.id === pr.claim && !x.pid); if (pl) { pl.pid = pid; changed = true; } }
     if (!pl) {
       pl = st.players.find(x => !x.pid && x.name.toLowerCase() === name.toLowerCase());
       if (pl) { pl.pid = pid; changed = true; }
@@ -534,12 +565,14 @@ function hostPeers() {
 /* ---------- player ---------- */
 function pPresence(patch) {
   Object.assign(S.pres, patch, { t: Date.now() });
-  if (S.mq && S.code && S.pres.name) S.mq.publish(topic(S.code, "in/" + S.myPid), JSON.stringify(S.pres), { qos: 1, retain: true });
+  if (!S.mq || !S.code || !S.key || !S.pres.name) return;
+  const body = { ...S.pres };
+  seal(body).then(payload => S.mq.publish(topic(S.code, "in/" + S.myPid), payload, { qos: 1, retain: true })).catch(() => {});
 }
-function joinAs(name) {
+function joinAs(name, claim) {
   S.myName = cleanName(name); if (!S.myName) return;
   ls.set("kjm-name", S.myName);
-  pPresence({ role: "player", pid: S.myPid, name: S.myName, ans: null });
+  pPresence({ role: "player", pid: S.myPid, name: S.myName, claim: claim || null, ans: null });
   render();
 }
 function playerSubmit(v) {
@@ -607,6 +640,7 @@ function viewLanding() {
   const last = ls.get("kjm-last-host", null);
   const lastSt = last ? ls.get("kjm-host-" + last, null) : null;
   const codeIn = h("input", { id: "land-code", "data-keep": true, class: "field code-input", maxlength: 6, autocomplete: "off", autocapitalize: "characters", placeholder: "Spelcode", "aria-label": "Spelcode", enterkeyhint: "go" });
+  const passIn = h("input", { id: "land-pass", "data-keep": true, class: "field code-input", maxlength: 6, autocomplete: "off", autocapitalize: "characters", placeholder: "Wachtwoord", "aria-label": "Wachtwoord", enterkeyhint: "go" });
   const err = h("p", { class: "form-err", "aria-live": "polite" });
   const steps = [
     ["Eerst schat één speler", "Die krijgt een vraag over zichzelf en vult stiekem een getal in.", "± 20 seconden"],
@@ -618,10 +652,10 @@ function viewLanding() {
         h("h1", { class: "title" }, "Hoe goed ken jij je vrienden?"),
         h("p", { class: "sub" }, "Eén vriend schat iets over zichzelf, de rest raadt welk getal dat was. Eén groot scherm, iedereen op de eigen telefoon.")),
       h("div", { class: "grid" },
-        h("form", { class: "panel s6", onsubmit: e => { e.preventDefault(); const c = cleanCode(codeIn.value); if (c.length !== 6) { err.textContent = "Een spelcode heeft 6 tekens."; return; } location.hash = c; } },
+        h("form", { class: "panel s6", onsubmit: e => { e.preventDefault(); const c = cleanCode(codeIn.value), pw = cleanCode(passIn.value); if (c.length !== 6) { err.textContent = "Een spelcode heeft 6 tekens."; return; } if (pw.length !== 6) { err.textContent = "Het wachtwoord heeft 6 tekens. Het staat op het grote scherm."; return; } location.hash = c + "-" + pw; } },
           h("h2", { class: "panel-title" }, "Doe mee"),
-          h("p", { class: "muted" }, "Vul de code in die op het grote scherm staat, of scan de QR-code."),
-          h("div", { class: "inline" }, codeIn, h("button", { class: "btn btn-primary", type: "submit" }, "Doe mee")), err),
+          h("p", { class: "muted" }, "Scan de QR-code, of vul de code en het wachtwoord in die op het grote scherm staan."),
+          h("div", { class: "inline" }, codeIn, passIn, h("button", { class: "btn btn-primary", type: "submit" }, "Doe mee")), err),
         h("div", { class: "panel s6" },
           h("h2", { class: "panel-title" }, "Host een spel"),
           h("p", { class: "muted" }, "Open dit op een laptop of tv. Hier zet je de vragen klaar en zie je de uitslagen."),
@@ -707,7 +741,16 @@ function hostLobby(st) {
     st.players = st.players.filter(p => p.id !== id);
     st.questions.forEach(q => { if (q.subject === id) q.subject = null; });
   });
-  const opts = id => [h("option", { value: "" }, "Over wie?"), ...st.players.map(p => h("option", { value: p.id, selected: p.id === id }, p.name))];
+  // Who a question is about is typed; a new name becomes a player who can claim it from a phone later.
+  S.drafts ||= {};
+  const setSubject = (qid, raw) => mutate(st => {
+    const x = st.questions.find(y => y.id === qid); if (!x) return;
+    const n = cleanName(raw);
+    if (!n) { x.subject = null; return; }
+    let pl = st.players.find(p => p.name.toLowerCase() === n.toLowerCase());
+    if (!pl && st.players.length < 40) { pl = { id: rid(), name: n, color: nextColor(st), pid: null }; st.players.push(pl); }
+    x.subject = pl?.id || null;
+  });
   const fromBank = () => mutate(st => {
     const used = new Set(st.questions.map(q => q.text));
     const left = BANK.filter(t => !used.has(t));
@@ -736,6 +779,7 @@ function hostLobby(st) {
   return h("div", { class: "stack-l" },
     h("header", { class: "greet" },
       h("h1", { class: "title" }, `${hour()}. Doe mee met code `, h("span", { class: "accent num" }, S.code), "."),
+      h("p", { class: "sub" }, "Wachtwoord: ", h("b", { class: "num pass" }, S.pass), ". Wie de QR-code scant, hoeft het niet in te vullen."),
       h("p", { class: "sub" }, st.players.length ? `${st.players.length} ${st.players.length === 1 ? "speler" : "spelers"}, ${okQs.length} ${okQs.length === 1 ? "vraag" : "vragen"} klaar.` : "Nog niemand binnen. Scan de QR-code of open de link op je telefoon.")),
     h("div", { class: "grid" },
       h("section", { class: "panel s9" },
@@ -752,13 +796,17 @@ function hostLobby(st) {
         h("h2", { class: "panel-title" }, "Doe mee"),
         joinQr(url),
         h("p", { class: "code-big num" }, S.code),
+        h("p", { class: "cap" }, "Wachtwoord ", h("b", { class: "num pass" }, S.pass)),
         h("p", { class: "cap url" }, url),
         copyLink(url))),
     h("section", { class: "panel" },
       h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Vragen"), h("span", { class: "chip num" }, `${okQs.length} klaar`)),
+      h("p", { class: "cap" }, "Typ bij elke vraag over wie hij gaat. Een nieuwe naam wordt vanzelf een speler; op de avond tikt die op de telefoon op zijn naam."),
+      h("datalist", { id: "kjm-names" }, st.players.map(p => h("option", { value: p.name }))),
       h("div", { class: "qlist" }, st.questions.map((q, i) => h("div", { class: "qrow" },
         h("span", { class: "n num" }, i + 1),
-        h("select", { class: "field", id: `qs-${q.id}`, "aria-label": `Onderwerp van vraag ${i + 1}`, onchange: e => mutate(st => { const x = st.questions.find(y => y.id === q.id); if (x) x.subject = e.target.value || null; }) }, opts(q.subject)),
+        h("input", { class: "field", id: `qs-${q.id}`, list: "kjm-names", value: S.drafts[q.id] ?? (player(st, q.subject)?.name || ""), placeholder: "Over wie?", autocomplete: "off", maxlength: 24, "aria-label": `Over wie gaat vraag ${i + 1}`,
+          oninput: e => { S.drafts[q.id] = e.target.value; }, onchange: e => setSubject(q.id, e.target.value) }),
         h("input", { class: "field q", id: `qt-${q.id}`, value: q.text, maxlength: 160, placeholder: "Typ een vraag met een getal als antwoord", "aria-label": `Vraag ${i + 1}`,
           oninput: e => { const x = S.state.questions.find(y => y.id === q.id); if (x) { x.text = e.target.value.slice(0, 160); save(); } },
           onchange: () => render() }),
@@ -872,7 +920,7 @@ function landingSets() {
     h("div", { class: "inline wrap" }, importButton()));
 }
 
-function joinUrl() { return location.origin + location.pathname + "#" + S.code; }
+function joinUrl() { return location.origin + location.pathname + "#" + S.code + "-" + S.pass; }
 function joinQr(url) {
   const qr = h("div", { class: "qr", role: "img", "aria-label": "QR-code om mee te doen" });
   try { const q = qrcode(0, "M"); q.addData(url); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch { qr.hidden = true; }
@@ -981,7 +1029,7 @@ function roundRanking(st, r, highlightId) {
       h("span", { class: "pos num" }, x.g == null ? "–" : i + 1),
       person(x.p, x.p.id === highlightId ? " (jij)" : ""),
       best ? h("span", { class: "tag ok" }, x.acc === 1 ? "Voltreffer" : "Dichtstbij") : h("span"),
-      h("span", { class: "det num" }, x.g == null ? "geen antwoord" : `gokte ${fmt(x.g)} · ${pct(x.acc)} · ${offText(x.g, r.actual)}`),
+      h("span", { class: "det num" }, x.g == null ? "geen antwoord" : `gokte ${fmt(x.g)} · ${offText(x.g, r.actual)} · ${best && x.pts > Math.round(1000 * x.acc) ? `${Math.round(1000 * x.acc)} + ${x.pts - Math.round(1000 * x.acc)} bonus` : pct(x.acc)}`),
       h("span", { class: "pts num" }, `+${x.pts}`));
   }));
 }
@@ -1118,6 +1166,7 @@ function viewPlayer() {
   const top = bar(me0 ? [person(me0)] : null);
   const wrap = (...kids) => h("div", { class: "page phone" }, top, h("main", { class: "col" }, ...kids));
   const connNote = !S.conn && (S.everConnected || S.ui.connSlow) ? h("p", { class: "notice warn" }, "Geen verbinding met het spel. Je telefoon probeert het opnieuw.") : null;
+  if (S.ui.needPass || S.ui.badPass) return wrap(passForm());
   if (st?.removed?.includes(S.myPid)) return wrap(h("p", { class: "notice warn" }, "De host heeft je uit dit spel gehaald."));
   if (!S.myName || !S.joined) return wrap(connNote, playerJoin(st));
   const me = meIn(st);
@@ -1133,9 +1182,26 @@ function viewPlayer() {
     : pEnd(st, me);
   return wrap(connNote, body);
 }
+function passForm() {
+  const inp = h("input", { id: "pass-in", "data-keep": true, class: "field field-lg code-input", maxlength: 6, autocomplete: "off", autocapitalize: "characters", placeholder: "Wachtwoord", "aria-label": "Wachtwoord", enterkeyhint: "go" });
+  const err = h("p", { class: "form-err", "aria-live": "polite" });
+  return h("form", { class: "stack-l", onsubmit: e => { e.preventDefault(); const pw = cleanCode(inp.value); if (pw.length !== 6) { err.textContent = "Het wachtwoord heeft 6 tekens."; return; } location.hash = S.code + "-" + pw; } },
+    h("header", { class: "greet" }, h("h1", { class: "title" }, `Wachtwoord voor ${S.code}`),
+      h("p", { class: "sub" }, S.ui.badPass ? "Dit wachtwoord klopt niet. Kijk op het grote scherm, of scan de QR-code." : "Het staat op het grote scherm, naast de code. Met de QR-code hoef je het niet in te vullen.")),
+    h("div", { class: "panel" }, inp, h("button", { class: "btn btn-primary btn-lg btn-block", type: "submit" }, "Verder"), err));
+}
+function pickMe(p) {
+  S.joined = true; ls.set("kjm-joined", S.code);
+  joinAs(p.name, p.id);
+}
 function playerJoin(st) {
+  const free = (st?.players || []).filter(p => !p.pid);
+  if (free.length && !S.ui.typeName) return h("div", { class: "stack-l" },
+    h("header", { class: "greet" }, h("h1", { class: "title" }, "Wie ben jij?"), h("p", { class: "sub" }, "Tik op je naam. De host heeft de vragen al klaargezet.")),
+    h("div", { class: "rows" }, free.map(p => h("button", { class: "rowcard as-btn", type: "button", onclick: () => pickMe(p) }, person(p), h("span", { class: "tag" }, "Dit ben ik")))),
+    h("div", null, h("button", { class: "linkbtn", onclick: () => { S.ui.typeName = true; render(); } }, "Ik sta er niet bij")));
   const inp = h("input", { id: "join-name", "data-keep": true, class: "field field-lg", maxlength: 24, autocomplete: "off", placeholder: "Je naam", value: S.myName || "", "aria-label": "Je naam", enterkeyhint: "go" });
-  return h("form", { class: "stack-l", onsubmit: e => { e.preventDefault(); if (!cleanName(inp.value)) return; S.joined = true; joinAs(inp.value); } },
+  return h("form", { class: "stack-l", onsubmit: e => { e.preventDefault(); if (!cleanName(inp.value)) return; S.joined = true; ls.set("kjm-joined", S.code); joinAs(inp.value); } },
     h("header", { class: "greet" }, h("h1", { class: "title" }, "Doe mee."), h("p", { class: "sub" }, "Vul de naam in die je vrienden kennen. Je verschijnt dan op het grote scherm.")),
     h("div", { class: "panel" }, inp, h("button", { class: "btn btn-primary btn-lg btn-block", type: "submit" }, "Doe mee")),
     st?.players?.length ? h("div", { class: "panel" }, h("p", { class: "muted" }, "Al in het spel"), h("div", { class: "inline wrap" }, st.players.map(p => person(p)))) : null);
@@ -1145,7 +1211,7 @@ function pLobby(st, me) {
     h("header", { class: "greet" }, h("h1", { class: "title" }, `Je doet mee, ${me.name}.`), h("p", { class: "sub" }, "Wacht tot de host start en laat je telefoon open.")),
     h("div", { class: "panel" }, h("div", { class: "panel-head" }, h("h2", { class: "panel-title" }, "Spelers"), h("span", { class: "chip num" }, st.players.length)),
       h("div", { class: "inline wrap" }, st.players.map(p => person(p, p.id === me.id ? " (jij)" : "")))),
-    h("div", null, h("button", { class: "linkbtn", onclick: () => { S.joined = false; render(); } }, "Naam wijzigen")));
+    h("div", null, h("button", { class: "linkbtn", onclick: () => { S.joined = false; S.ui.typeName = true; render(); } }, "Naam wijzigen")));
 }
 function pQ(st) {
   const q = curQ(st), mine = q.subject === meIn(st)?.id;
@@ -1154,7 +1220,7 @@ function pQ(st) {
 }
 function sentNote(recorded) {
   const mine = S.myAns && S.myAns.k === curKey(S.state) ? S.myAns.v : null;
-  if (recorded != null) return h("p", { class: "sent", "aria-live": "polite" }, h("span", { class: "tag ok" }, `Ontvangen: ${fmt(recorded)}`), " Je kunt het nog aanpassen tot de host verder gaat.");
+  if (recorded != null) return h("p", { class: "sent", "aria-live": "polite" }, h("span", { class: "tag ok" }, mine != null ? `Ontvangen: ${fmt(mine)}` : "Ontvangen"), " Je kunt het nog aanpassen tot de host verder gaat.");
   if (mine != null) return h("p", { class: "cap", "aria-live": "polite" }, `Versturen: ${fmt(mine)}…`);
   return null;
 }
@@ -1220,11 +1286,7 @@ function connect(onConnect, onMessage) {
   const down = () => { if (S.conn) { S.conn = false; render(); } };
   c.on("close", down); c.on("offline", down);
   c.on("error", () => {});
-  c.on("message", (t, buf, packet) => {
-    let data = null;
-    try { const txt = buf.toString(); data = txt ? JSON.parse(txt) : null; } catch {}
-    onMessage(t, data, packet);
-  });
+  c.on("message", (t, buf, packet) => onMessage(t, buf.toString(), packet));
 }
 function startHost(code) {
   S.role = "host"; S.code = code; S.ui.loading = false;
@@ -1232,24 +1294,40 @@ function startHost(code) {
   S.state = ls.get("kjm-host-" + code, null);
   if (!S.state?.players) S.state = newState();
   if (!S.state.removed) S.state.removed = [];
+  S.pass = ls.get("kjm-pass-" + code, null) || newPass();
+  ls.set("kjm-pass-" + code, S.pass);
   save();
-  connect(() => { S.mq.subscribe(topic(code, "in/+"), { qos: 1 }); flush(); }, (t, data, packet) => {
+  const peerMsg = (t, txt, packet) => {
     const pid = t.split("/").pop();
-    if (!data || typeof data !== "object") S.peers.delete(pid);
-    else S.peers.set(pid, { presence: data, seen: packet?.retain ? Math.min(Date.now(), +data.t || 0) : Date.now() });
-    clearTimeout(S.peerT); S.peerT = setTimeout(hostPeers, 60);
-  });
+    const done = () => { clearTimeout(S.peerT); S.peerT = setTimeout(hostPeers, 60); };
+    if (!txt) { S.peers.delete(pid); done(); return; }
+    unseal(txt).then(data => {
+      if (!data || typeof data !== "object") return;
+      S.peers.set(pid, { presence: data, seen: packet?.retain ? Math.min(Date.now(), +data.t || 0) : Date.now() });
+      done();
+    }).catch(() => {});
+  };
+  deriveKey(code, S.pass)
+    .then(k => { S.key = k; connect(() => { S.mq.subscribe(topic(code, "in/+"), { qos: 1 }); flush(); }, peerMsg); })
+    .catch(() => { S.ui.saveErr = "Versleutelen werkt niet in deze browser. Open de site via https://."; render(); });
   setInterval(hostPeers, 5000);
   checkAuto(); render();
 }
-function startPlayer(code) {
+function startPlayer(code, pass) {
   S.role = "player"; S.code = code; S.ui.loading = false;
-  if (S.myName) S.joined = true;
+  if (!pass) { S.ui.needPass = true; render(); return; }
+  if (S.myName && ls.get("kjm-joined", null) === code) S.joined = true;
   const notFound = setTimeout(() => { if (!S.state) { S.ui.loadNote = `Geen spel gevonden met code ${code}. Klopt de code, en staat het grote scherm open?`; render(); } }, 9000);
-  connect(() => { S.mq.subscribe(topic(code, "state"), { qos: 1 }); if (S.joined) joinAs(S.myName); }, (t, data) => {
-    if (t !== topic(code, "state") || !data?.players) return;
-    clearTimeout(notFound); S.ui.loadNote = null; S.state = data; render();
-  });
+  const stateMsg = (t, txt) => {
+    if (t !== topic(code, "state") || !txt) return;
+    unseal(txt).then(data => {
+      if (!data?.players) return;
+      clearTimeout(notFound); S.ui.loadNote = null; S.state = data; render();
+    }).catch(() => { clearTimeout(notFound); if (!S.state) { S.ui.badPass = true; render(); } });
+  };
+  deriveKey(code, pass)
+    .then(k => { S.key = k; connect(() => { S.mq.subscribe(topic(code, "state"), { qos: 1 }); if (S.joined) joinAs(S.myName, S.pres.claim); }, stateMsg); })
+    .catch(() => { S.ui.loadNote = "Versleutelen werkt niet in deze browser. Open de site via https://."; render(); });
   setInterval(() => { if (S.joined && S.conn) pPresence({}); }, 8000);
   render();
 }
@@ -1259,8 +1337,9 @@ function boot() {
   S.ui.loading = false;
   const hsh = decodeURIComponent(location.hash.slice(1));
   if (/^host-/i.test(hsh)) { const c = cleanCode(hsh.slice(5)); if (c.length === 6) return startHost(c); }
-  const c = cleanCode(hsh);
-  if (c.length === 6) return startPlayer(c);
+  const [rawCode, rawPass] = hsh.split("-");
+  const c = cleanCode(rawCode), pw = cleanCode(rawPass);
+  if (c.length === 6) return startPlayer(c, pw.length === 6 ? pw : null);
   S.role = "landing"; render();
 }
 window.addEventListener("hashchange", () => location.reload());
