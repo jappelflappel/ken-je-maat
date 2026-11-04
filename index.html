@@ -351,17 +351,23 @@ function icon(name) {
 }
 
 /* ---------- scoring ---------- */
-// Accuracy = smaller/greater of guess and answer (+1 smoothing so 0 works). 2x off = ~50%, 10x off = ~10%.
-function accuracy(g, a) { g = Math.max(0, g); a = Math.max(0, a); return (Math.min(g, a) + 1) / (Math.max(g, a) + 1); }
-// Points follow the ratio; the bonus goes to the smallest plain difference, so 2 and 4 tie around 3.
+// Accuracy on a log scale: how many times off you are (+1 so 0 works), through a bell curve of width 0.5.
+// 20% off keeps ~85%, 1.5x off ~50%, 2x off ~15%; anyone who answers keeps at least 1% (10 points).
+const CURVE = 0.5, FLOOR = 0.01, BONUS = 150;
+function accuracy(g, a) {
+  g = Math.max(0, g); a = Math.max(0, a);
+  const off = Math.log((g + 1) / (a + 1)) / CURVE;
+  return Math.max(FLOOR, Math.exp(-off * off));
+}
+// The bonus goes to whoever scores most this round (ties share it), so points and bonus never disagree.
 function scoreRound(actual, guesses, settings) {
-  const acc = {}, points = {}, dist = {};
-  let best = Infinity;
-  for (const [id, g] of Object.entries(guesses)) { acc[id] = accuracy(g, actual); dist[id] = Math.abs(g - actual); best = Math.min(best, dist[id]); }
-  const closest = Object.keys(acc).filter(id => dist[id] <= best + 1e-9);
+  const acc = {}, points = {};
+  let best = -1;
+  for (const [id, g] of Object.entries(guesses)) { acc[id] = accuracy(g, actual); best = Math.max(best, Math.round(1000 * acc[id])); }
+  const closest = Object.keys(acc).filter(id => Math.round(1000 * acc[id]) >= best);
   for (const id of Object.keys(acc)) {
     let p = Math.round(1000 * acc[id]);
-    if (settings.bonus && closest.includes(id)) p += 250;
+    if (settings.bonus && closest.includes(id)) p += BONUS;
     points[id] = p;
   }
   return { acc, points, closest };
@@ -603,7 +609,7 @@ function viewLanding() {
   const steps = [
     ["Eerst schat één speler", "Die krijgt een vraag over zichzelf en vult stiekem een getal in.", "± 20 seconden"],
     ["Dan raadt de rest", "Niet het echte antwoord: wat die speler zelf heeft ingevuld.", "45 seconden"],
-    ["Iedereen scoort", "Hoe dichterbij, hoe meer punten. Wie het dichtst zit krijgt 250 extra.", "± 15 seconden"]];
+    ["Iedereen scoort", "Hoe dichterbij, hoe meer punten. Wie de meeste punten heeft krijgt 150 extra.", "± 15 seconden"]];
   return h("div", { class: "page" }, bar(),
     h("main", { class: "col" },
       h("header", { class: "greet" },
@@ -651,7 +657,7 @@ function scoreSlider() {
     h("div", { class: "panel s3 score-side" },
       h("p", { class: "muted" }, "Jouw punten"),
       out,
-      h("p", { class: "cap" }, "1000 × kleinste gedeeld door grootste, allebei +1. Twee keer ernaast is ongeveer de helft.")));
+      h("p", { class: "cap" }, "Gemeten in hoeveel keer je ernaast zit. 20% ernaast houdt bijna alles, twee keer ernaast nog maar een paar honderd. Wie de meeste punten heeft krijgt er 150 bij.")));
 }
 
 /* ---------- host views ---------- */
@@ -766,7 +772,7 @@ function hostLobby(st) {
           [0, 20, 30, 45, 60, 90].map(t => h("option", { value: t, selected: st.settings.timer === t }, t ? `${t} seconden` : "Geen timer")))),
       h("label", { class: "inline", for: "set-bonus" },
         h("input", { type: "checkbox", id: "set-bonus", checked: st.settings.bonus, onchange: e => mutate(st => st.settings.bonus = e.target.checked) }),
-        h("span", { class: "muted" }, "250 extra voor wie het dichtst zat")),
+        h("span", { class: "muted" }, "150 extra voor de beste gok")),
       h("span", { class: "spacer" }),
       reason ? h("span", { class: "cap" }, reason) : null,
       h("button", { class: "btn btn-primary btn-lg", disabled: !!reason, onclick: startGame }, "Start spel")));
