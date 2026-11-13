@@ -48,6 +48,12 @@ h1,h2,h3{text-wrap:balance}
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:18px;
   padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
 .wordmark{display:flex;align-items:center;gap:10px;font-weight:600;font-size:16px}
+.top:has(.rejoin){align-items:flex-start}
+.top-left{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.rejoin{display:flex;align-items:center;gap:14px;background:var(--surface);border-radius:16px;padding:10px 16px 10px 10px}
+.rejoin .qr{width:104px;max-width:104px;padding:6px;border-radius:10px}
+.rejoin-txt{display:flex;flex-direction:column;gap:2px;font-size:15px}
+@media (max-width:760px){.rejoin .qr{width:76px;max-width:76px}}
 .mark{display:block}
 .top-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
 .col{width:100%;max-width:1148px;margin:0 auto;padding-block:40px 72px;
@@ -464,6 +470,7 @@ function publicState(st) {
   const shown = i => pub.phase === "end" || (pub.phase !== "lobby" && i <= pub.qi);
   pub.questions = pub.questions.map((q, i) => shown(i) ? q : { id: q.id, text: "", subject: null });
   pub.pending = { subject: st.pending.subject != null ? true : null, guesses: Object.fromEntries(Object.keys(st.pending.guesses).map(id => [id, true])) };
+  pub.online = [...S.online];
   return pub;
 }
 function flush() {
@@ -558,9 +565,11 @@ function hostPeers() {
     if (!name || st.removed.includes(pid)) continue;
     let pl = st.players.find(x => x.pid === pid);
     if (pr.unclaim) { const mine = st.players.find(x => x.pid === pid); if (mine) { mine.pid = null; changed = true; } continue; }
-    if (!pl && typeof pr.claim === "string") { pl = st.players.find(x => x.id === pr.claim && !x.pid); if (pl) { pl.pid = pid; changed = true; } }
+    // A player who dropped out (or switched phones) can take their name back while it is not online.
+    if (!pl && !fresh) continue;
+    if (!pl && typeof pr.claim === "string") { pl = st.players.find(x => x.id === pr.claim && (!x.pid || !S.online.has(x.id))); if (pl) { pl.pid = pid; changed = true; } }
     if (!pl) {
-      pl = st.players.find(x => !x.pid && x.name.toLowerCase() === name.toLowerCase());
+      pl = st.players.find(x => (!x.pid || !S.online.has(x.id)) && x.name.toLowerCase() === name.toLowerCase());
       if (pl) { pl.pid = pid; changed = true; }
       else if (st.players.length < 40) { pl = { id: rid(), name: uniqueName(st, name), color: nextColor(st), pid }; st.players.push(pl); changed = true; }
       else continue;
@@ -570,8 +579,10 @@ function hostPeers() {
     const a = pr.ans;
     if (key && a && typeof a === "object" && a.k === key) { const v = num(a.v); if (v != null && recordValue(st, pl, v)) changed = true; }
   }
+  const onlineChanged = [...online].sort().join() !== [...S.online].sort().join();
   S.online = online;
   if (changed) { st.updatedAt = Date.now(); save(); checkAuto(); }
+  else if (onlineChanged) flush(); // phones use the online list to offer names that are free to take back
   render();
 }
 
@@ -635,10 +646,19 @@ function mark() {
     s("rect", { x: 0, y: 0, width: 28, height: 18, rx: 4, fill: "#1b6e66" }),
     [5, 10, 15, 20].map((x, i) => s("rect", { x, y: 0, width: 2, height: i % 2 ? 6 : 10, rx: 1, fill: "#ffffff" })));
 }
-function bar(extra) {
+function bar(extra, left) {
   return h("header", { class: "top" },
-    h("div", { class: "wordmark" }, mark(), "Ken je maat"),
+    h("div", { class: "top-left" }, h("div", { class: "wordmark" }, mark(), "Ken je maat"), left || null),
     extra ? h("div", { class: "top-meta" }, extra) : null);
+}
+// Always on the big screen during a game, so anyone who dropped out can scan back in.
+function rejoinCard() {
+  return h("div", { class: "rejoin" },
+    joinQr(joinUrl()),
+    h("div", { class: "rejoin-txt" },
+      h("span", { class: "cap" }, "Eruit gevallen? Scan om terug te komen"),
+      h("span", null, "Code ", h("b", { class: "num pass" }, S.code)),
+      h("span", null, "Wachtwoord ", h("b", { class: "num pass" }, S.pass))));
 }
 
 function view() {
@@ -738,7 +758,7 @@ function viewHost() {
     : st.phase === "reveal" ? hostReveal(st)
     : st.phase === "scores" ? hostScores(st)
     : hostEnd(st);
-  return h("div", { class: "page" }, bar(hostMeta()), h("main", { class: "col" }, ...notes, body));
+  return h("div", { class: "page" }, bar(hostMeta(), st && st.phase !== "lobby" ? rejoinCard() : null), h("main", { class: "col" }, ...notes, body));
 }
 
 function hostLobby(st) {
@@ -1215,7 +1235,8 @@ function pickMe(p) {
   joinAs(p.name, p.id);
 }
 function playerJoin(st) {
-  const free = (st?.players || []).filter(p => !p.pid);
+  const online = new Set(st?.online || []);
+  const free = (st?.players || []).filter(p => !p.pid || (p.pid !== S.myPid && !online.has(p.id)));
   if (free.length && !S.ui.typeName) return h("div", { class: "stack-l" },
     h("header", { class: "greet" }, h("h1", { class: "title" }, "Wie ben jij?"), h("p", { class: "sub" }, "Tik op je naam. De host heeft de vragen al klaargezet.")),
     h("div", { class: "rows" }, free.map(p => h("button", { class: "rowcard as-btn", type: "button", onclick: () => pickMe(p) }, person(p), h("span", { class: "tag" }, "Dit ben ik")))),
