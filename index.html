@@ -399,9 +399,8 @@ const BROKER = "wss://broker.hivemq.com:8884/mqtt";
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const topic = (code, sub) => `kenjemaat/v2/${code}/${sub}`;
 const newCode = () => Array.from({ length: 6 }, () => CODE_CHARS[crypto.getRandomValues(new Uint32Array(1))[0] % CODE_CHARS.length]).join("");
-const newPass = newCode;
-// Every message on the public broker is sealed with AES-GCM. The key comes from the game's password
-// (PBKDF2, salted with the code), so the broker and anyone without the password see only noise.
+// Every message on the public broker is sealed with AES-GCM, keyed from the game code (PBKDF2),
+// so a passer-by on the broker who does not know the code sees only noise.
 const te = new TextEncoder(), td = new TextDecoder();
 const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 const unb64 = s => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
@@ -657,8 +656,7 @@ function rejoinCard() {
     joinQr(joinUrl()),
     h("div", { class: "rejoin-txt" },
       h("span", { class: "cap" }, "Eruit gevallen? Scan om terug te komen"),
-      h("span", null, "Code ", h("b", { class: "num pass" }, S.code)),
-      h("span", null, "Wachtwoord ", h("b", { class: "num pass" }, S.pass))));
+      h("span", null, "Code ", h("b", { class: "num pass" }, S.code))));
 }
 
 function view() {
@@ -673,7 +671,6 @@ function viewLanding() {
   const last = ls.get("kjm-last-host", null);
   const lastSt = last ? ls.get("kjm-host-" + last, null) : null;
   const codeIn = h("input", { id: "land-code", "data-keep": true, class: "field code-input", maxlength: 6, autocomplete: "off", autocapitalize: "characters", placeholder: "Spelcode", "aria-label": "Spelcode", enterkeyhint: "go" });
-  const passIn = h("input", { id: "land-pass", "data-keep": true, class: "field code-input", maxlength: 6, autocomplete: "off", autocapitalize: "characters", placeholder: "Wachtwoord", "aria-label": "Wachtwoord", enterkeyhint: "go" });
   const err = h("p", { class: "form-err", "aria-live": "polite" });
   const steps = [
     ["Eerst schat één speler", "Die krijgt een vraag over zichzelf en vult stiekem een getal in.", "± 20 seconden"],
@@ -685,10 +682,10 @@ function viewLanding() {
         h("h1", { class: "title" }, "Hoe goed ken jij je vrienden?"),
         h("p", { class: "sub" }, "Eén vriend schat iets over zichzelf, de rest raadt welk getal dat was. Eén groot scherm, iedereen op de eigen telefoon.")),
       h("div", { class: "grid" },
-        h("form", { class: "panel s6", onsubmit: e => { e.preventDefault(); const c = cleanCode(codeIn.value), pw = cleanCode(passIn.value); if (c.length !== 6) { err.textContent = "Een spelcode heeft 6 tekens."; return; } if (pw.length !== 6) { err.textContent = "Het wachtwoord heeft 6 tekens. Het staat op het grote scherm."; return; } location.hash = c + "-" + pw; } },
+        h("form", { class: "panel s6", onsubmit: e => { e.preventDefault(); const c = cleanCode(codeIn.value); if (c.length !== 6) { err.textContent = "Een spelcode heeft 6 tekens."; return; } location.hash = c; } },
           h("h2", { class: "panel-title" }, "Doe mee"),
-          h("p", { class: "muted" }, "Scan de QR-code, of vul de code en het wachtwoord in die op het grote scherm staan."),
-          h("div", { class: "inline" }, codeIn, passIn, h("button", { class: "btn btn-primary", type: "submit" }, "Doe mee")), err),
+          h("p", { class: "muted" }, "Scan de QR-code, of vul de code in die op het grote scherm staat."),
+          h("div", { class: "inline" }, codeIn, h("button", { class: "btn btn-primary", type: "submit" }, "Doe mee")), err),
         h("div", { class: "panel s6" },
           h("h2", { class: "panel-title" }, "Host een spel"),
           h("p", { class: "muted" }, "Open dit op een laptop of tv. Hier zet je de vragen klaar en zie je de uitslagen."),
@@ -813,7 +810,6 @@ function hostLobby(st) {
   return h("div", { class: "stack-l" },
     h("header", { class: "greet" },
       h("h1", { class: "title" }, `${hour()}. Doe mee met code `, h("span", { class: "accent num" }, S.code), "."),
-      h("p", { class: "sub" }, "Wachtwoord: ", h("b", { class: "num pass" }, S.pass), ". Wie de QR-code scant, hoeft het niet in te vullen."),
       h("p", { class: "sub" }, st.players.length ? `${st.players.length} ${st.players.length === 1 ? "speler" : "spelers"}, ${okQs.length} ${okQs.length === 1 ? "vraag" : "vragen"} klaar.` : "Nog niemand binnen. Scan de QR-code of open de link op je telefoon.")),
     h("div", { class: "grid" },
       h("section", { class: "panel s9" },
@@ -830,7 +826,6 @@ function hostLobby(st) {
         h("h2", { class: "panel-title" }, "Doe mee"),
         joinQr(url),
         h("p", { class: "code-big num" }, S.code),
-        h("p", { class: "cap" }, "Wachtwoord ", h("b", { class: "num pass" }, S.pass)),
         h("p", { class: "cap url" }, url),
         copyLink(url))),
     h("section", { class: "panel" },
@@ -954,7 +949,7 @@ function landingSets() {
     h("div", { class: "inline wrap" }, importButton()));
 }
 
-function joinUrl() { return location.origin + location.pathname + "#" + S.code + "-" + S.pass; }
+function joinUrl() { return location.origin + location.pathname + "#" + S.code; }
 function joinQr(url) {
   const qr = h("div", { class: "qr", role: "img", "aria-label": "QR-code om mee te doen" });
   try { const q = qrcode(0, "M"); q.addData(url); q.make(); qr.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch { qr.hidden = true; }
@@ -1200,7 +1195,6 @@ function viewPlayer() {
   const top = bar(me0 ? [person(me0)] : null);
   const wrap = (...kids) => h("div", { class: "page phone" }, top, h("main", { class: "col" }, ...kids));
   const connNote = !S.conn && (S.everConnected || S.ui.connSlow) ? h("p", { class: "notice warn" }, "Geen verbinding met het spel. Je telefoon probeert het opnieuw.") : null;
-  if (S.ui.needPass || S.ui.badPass) return wrap(passForm());
   if (st?.removed?.includes(S.myPid)) return wrap(h("p", { class: "notice warn" }, "De host heeft je uit dit spel gehaald."));
   if (!S.myName || !S.joined) return wrap(connNote, playerJoin(st));
   const me = meIn(st);
@@ -1215,20 +1209,6 @@ function viewPlayer() {
     : st.phase === "scores" ? pScores(st, me)
     : pEnd(st, me);
   return wrap(connNote, body);
-}
-function passForm() {
-  const inp = h("input", { id: "pass-in", "data-keep": true, class: "field field-lg code-input", maxlength: 6, autocomplete: "off", autocapitalize: "characters", placeholder: "Wachtwoord", "aria-label": "Wachtwoord", enterkeyhint: "go" });
-  const err = h("p", { class: "form-err", "aria-live": "polite" });
-  return h("form", { class: "stack-l", onsubmit: e => { e.preventDefault(); const pw = cleanCode(inp.value); if (pw.length !== 6) { err.textContent = "Het wachtwoord heeft 6 tekens."; return; } location.hash = S.code + "-" + pw; } },
-    h("header", { class: "greet" }, h("h1", { class: "title" }, `Wachtwoord voor ${S.code}`),
-      h("p", { class: "sub" }, S.ui.badPass ? "Dit wachtwoord klopt niet. Kijk op het grote scherm, of scan de QR-code." : "Het staat op het grote scherm, naast de code. Met de QR-code hoef je het niet in te vullen.")),
-    h("div", { class: "panel" }, inp, h("button", { class: "btn btn-primary btn-lg btn-block", type: "submit" }, "Verder"), err));
-}
-// Give the chosen name back to the host so it shows up in "Wie ben jij?" again, then choose anew.
-function releaseName() {
-  pPresence({ claim: null, unclaim: Date.now(), ans: null });
-  S.joined = false; S.ui.typeName = false; ls.set("kjm-joined", null);
-  render();
 }
 function pickMe(p) {
   S.joined = true; ls.set("kjm-joined", S.code);
@@ -1336,8 +1316,6 @@ function startHost(code) {
   S.state = ls.get("kjm-host-" + code, null);
   if (!S.state?.players) S.state = newState();
   if (!S.state.removed) S.state.removed = [];
-  S.pass = ls.get("kjm-pass-" + code, null) || newPass();
-  ls.set("kjm-pass-" + code, S.pass);
   save();
   const peerMsg = (t, txt, packet) => {
     const pid = t.split("/").pop();
@@ -1349,15 +1327,14 @@ function startHost(code) {
       done();
     }).catch(() => {});
   };
-  deriveKey(code, S.pass)
+  deriveKey(code, code)
     .then(k => { S.key = k; connect(() => { S.mq.subscribe(topic(code, "in/+"), { qos: 1 }); flush(); }, peerMsg); })
     .catch(() => { S.ui.saveErr = "Versleutelen werkt niet in deze browser. Open de site via https://."; render(); });
   setInterval(hostPeers, 5000);
   checkAuto(); render();
 }
-function startPlayer(code, pass) {
+function startPlayer(code) {
   S.role = "player"; S.code = code; S.ui.loading = false;
-  if (!pass) { S.ui.needPass = true; render(); return; }
   if (S.myName && ls.get("kjm-joined", null) === code) S.joined = true;
   const notFound = setTimeout(() => { if (!S.state) { S.ui.loadNote = `Geen spel gevonden met code ${code}. Klopt de code, en staat het grote scherm open?`; render(); } }, 9000);
   const stateMsg = (t, txt) => {
@@ -1365,9 +1342,9 @@ function startPlayer(code, pass) {
     unseal(txt).then(data => {
       if (!data?.players) return;
       clearTimeout(notFound); S.ui.loadNote = null; S.state = data; render();
-    }).catch(() => { clearTimeout(notFound); if (!S.state) { S.ui.badPass = true; render(); } });
+    }).catch(() => {});
   };
-  deriveKey(code, pass)
+  deriveKey(code, code)
     .then(k => { S.key = k; connect(() => { S.mq.subscribe(topic(code, "state"), { qos: 1 }); if (S.joined) joinAs(S.myName, S.pres.claim); }, stateMsg); })
     .catch(() => { S.ui.loadNote = "Versleutelen werkt niet in deze browser. Open de site via https://."; render(); });
   setInterval(() => { if (S.joined && S.conn) pPresence({}); }, 8000);
@@ -1379,9 +1356,8 @@ function boot() {
   S.ui.loading = false;
   const hsh = decodeURIComponent(location.hash.slice(1));
   if (/^host-/i.test(hsh)) { const c = cleanCode(hsh.slice(5)); if (c.length === 6) return startHost(c); }
-  const [rawCode, rawPass] = hsh.split("-");
-  const c = cleanCode(rawCode), pw = cleanCode(rawPass);
-  if (c.length === 6) return startPlayer(c, pw.length === 6 ? pw : null);
+  const c = cleanCode(hsh.split("-")[0]); // older links carried "-password"; it is ignored now
+  if (c.length === 6) return startPlayer(c);
   S.role = "landing"; render();
 }
 window.addEventListener("hashchange", () => location.reload());
